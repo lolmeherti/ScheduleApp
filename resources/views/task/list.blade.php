@@ -1,17 +1,26 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+<style>
+    .container {
+        display: flex; /* or inline-flex */
+        flex-wrap: wrap;
+        gap:25px;
+        margin-top:30px;
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    You're logged in!
+    }
+</style>
+
+    <x-app-layout>
+        <div class="container">
+            @foreach($days as $day)
+                <div class="card" style="width: 25rem;">
+                    <div class="card-header text-white bg-dark mb-3" style="font-size:28px;">
+                        {{$day->dayName}}
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">An item</li>
+                        <li class="list-group-item">A second item</li>
+                        <li class="list-group-item">A third item</li>
+                    </ul>
                 </div>
-            </div>
-        </div>
-    </div>
-</x-app-layout>
+                    @endforeach
+                </div>
+    </x-app-layout>
