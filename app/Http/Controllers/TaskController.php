@@ -16,8 +16,7 @@ class TaskController extends Controller
      */
     public function index()
     {
-        //by default, this function returns the whole of current week
-        //and the whole of next week
+        //by default, this function returns the current week
         $daysBetweenDates = $this->getAllDaysBetweenTwoDates();
 
         return view('task.list')->with('days', $daysBetweenDates);
@@ -91,8 +90,7 @@ class TaskController extends Controller
 
     /**
      * Returns all days between two specific dates.
-     * If parameters are not set, it returns all the days in between
-     * the current weeks start day and the end of next week
+     * If parameters are not set, it returns all days in the current week
      * @param string $startDate
      * @param string $endDate
      * @return array{}
@@ -109,7 +107,7 @@ class TaskController extends Controller
 
           if(!$endDate)
           {
-              $endDate = $now->endOfWeek()->addWeek(1)->format('d-m-Y H:i');
+              $endDate = $now->endOfWeek()->format('d-m-Y H:i');
           }
 
           return CarbonPeriod::create($startDate, $endDate)->toArray();
