@@ -24,6 +24,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/list', [TaskController::class, 'index'])->name('list');
+Route::post('/list', [TaskController::class, 'store'])->name('store');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
