@@ -15,6 +15,15 @@ return new class extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
+            $table->string('description');
+            $table->string('repeating')->default("off");
+            $table->string('monday')->default("off");
+            $table->string('tuesday')->default("off");
+            $table->string('wednesday')->default("off");
+            $table->string('thursday')->default("off");
+            $table->string('friday')->default("off");
+            $table->string('saturday')->default("off");
+            $table->string('sunday')->default("off");
             $table->timestamps();
         });
     }
