@@ -6,6 +6,7 @@ use App\Models\Task;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
 {
@@ -36,11 +37,34 @@ class TaskController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
-        //
+
+        $request->validate(
+            [
+                'description' => ['required','string', 'max:1000']
+            ]);
+
+        $insertTask = DB::table('tasks')->insert([
+            'description'=>$request->input('description') ?? "off",
+            'repeating'=> $request->input('repeating') ?? "off",
+            'monday'=>$request->input('monday') ?? "off",
+            'tuesday'=>$request->input('tuesday') ?? "off",
+            'wednesday'=>$request->input('wednesday') ?? "off",
+            'thursday'=>$request->input('thursday') ?? "off",
+            'friday'=>$request->input('friday') ?? "off",
+            'saturday'=>$request->input('saturday') ?? "off",
+            'sunday'=>$request->input('sunday') ?? "off",
+            'created_at'=>now()
+            ]);
+
+        if($insertTask) {
+            return redirect()->back()->with('success', 'task created successfully!');
+        } else {
+            return redirect()->back()->with('error', 'something went wrong!');
+        }
     }
 
     /**
