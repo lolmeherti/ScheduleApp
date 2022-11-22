@@ -24,6 +24,9 @@ return new class extends Migration
             $table->string('friday')->default("off");
             $table->string('saturday')->default("off");
             $table->string('sunday')->default("off");
+            $table->string('time_due')->nullable();
+            $table->string('date_due')->nullable();
+            $table->string('completed')->default("off");
             $table->timestamps();
         });
     }
