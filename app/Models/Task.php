@@ -11,6 +11,10 @@ class Task extends Model
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+
+    protected $primaryKey = 'id';
+    protected $table = 'tasks';
+
     public mixed $description;
     public string $repeating;
     public string $monday;
@@ -20,6 +24,8 @@ class Task extends Model
     public string $friday;
     public string $saturday;
     public string $sunday;
+    public string $due_date;
+    public string $due_time;
 
 
     /**
@@ -37,5 +43,7 @@ class Task extends Model
         'friday',
         'saturday',
         'sunday',
+        'due_date',
+        'due_time'
     ];
 }
