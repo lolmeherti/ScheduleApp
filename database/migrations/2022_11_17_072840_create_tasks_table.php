@@ -16,17 +16,17 @@ return new class extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->string('description');
-            $table->string('repeating')->default("off");
-            $table->string('monday')->default("off");
-            $table->string('tuesday')->default("off");
-            $table->string('wednesday')->default("off");
-            $table->string('thursday')->default("off");
-            $table->string('friday')->default("off");
-            $table->string('saturday')->default("off");
-            $table->string('sunday')->default("off");
-            $table->string('time_due')->nullable();
-            $table->string('date_due')->nullable();
-            $table->string('completed')->default("off");
+            $table->string('repeating')->nullable()->default('off');
+            $table->string('monday')->nullable()->default('off');
+            $table->string('tuesday')->nullable()->default('off');
+            $table->string('wednesday')->nullable()->default('off');
+            $table->string('thursday')->nullable()->default('off');
+            $table->string('friday')->nullable()->default('off');
+            $table->string('saturday')->nullable()->default('off');
+            $table->string('sunday')->nullable()->default('off');
+            $table->string('time_due')->nullable()->default('off');
+            $table->string('date_due')->nullable()->default('off');
+            $table->string('completed')->nullable()->default('off');
             $table->timestamps();
         });
     }
