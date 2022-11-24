@@ -97,8 +97,8 @@
             <hr>
 
             <div class="form-group text-center">
-                <label for="datepicker">When is the task due?</label>
-                <input class="form-control text-center" id="datepicker" name="datepicker">
+                <label for="datepicker_create">When is the task due?</label>
+                <input class="form-control text-center" id="datepicker_create" name="datepicker_create">
             </div>
 
             <hr>
@@ -129,7 +129,7 @@
 
 <script>
     $(function () {
-        $("#datepicker").datepicker({
+        $("#datepicker_create").datepicker({
             minDate: 0,
             dateFormat: 'dd/mm/yy'
         });
