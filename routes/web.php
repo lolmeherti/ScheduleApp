@@ -25,6 +25,8 @@ Route::get('/dashboard', function () {
 
 Route::get('/list', [TaskController::class, 'index'])->name('list');
 Route::post('/list', [TaskController::class, 'store'])->name('store');
+Route::post('/list/edit', [TaskController::class, 'edit'])->name('edit');
+Route::get('/list/show/{id}', [TaskController::class, 'show'])->name('show');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
