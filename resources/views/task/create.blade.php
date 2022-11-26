@@ -2,7 +2,7 @@
     /* The popup form - hidden by default */
     .form-popup {
         width: 50%;
-        height: 58%;
+        height: 75%;
         position: absolute;
         top: 10%;
         left: 15%;
@@ -10,20 +10,20 @@
         z-index: 10;
         opacity: 0.9;
     }
+
     .form-group {
         padding: 10px;
     }
+
     .form-check {
         padding-right: 10px;
     }
-    .parag {
-        padding-left: 10px;
-        padding-top: 10px;
-    }
+
+
 </style>
 
 <div class="form-popup bg-dark text-white" id="createTaskForm">
-    <form method="post" action="{{ route('store') }}" autocomplete="off">
+    <form id="create_task" name="create_task" method="post" action="{{ route('store') }}" autocomplete="off">
         @csrf
         <div class="form-group text-center">
             <label for="description">Description of your task:</label>
@@ -32,7 +32,13 @@
 
         <hr>
 
-        <p class="parag">For which day(s)?</p>
+        <div class="form-group">
+        <details style="color:red;">
+            <summary style="color:white">For which day(s)?</summary>
+            You can pick days without a due date! The tasks will be created during the current week by default.
+        </details>
+        </div>
+
         <div class="form-group">
 
             <div class="form-check">
@@ -88,8 +94,8 @@
                 <label for="timepicker">What time?</label>
                 <select class="form-select text-center" style="width:20%" id="timepicker" name="timepicker">
                     @for($i=0; $i<24; $i++)
-                        <option value="<?php echo $i.":00"; ?>"><?php echo $i.":00"; ?></option>
-                        <option value="<?php echo $i.":30"; ?>"><?php echo $i.":30"; ?></option>
+                        <option value="<?php echo $i.":00"; ?>"><?php echo $i . ":00"; ?></option>
+                        <option value="<?php echo $i.":30"; ?>"><?php echo $i . ":30"; ?></option>
                     @endfor
                 </select>
             </div>
@@ -97,15 +103,24 @@
             <hr>
 
             <div class="form-group text-center">
-                <label for="datepicker_create">When is the task due?</label>
+                <details style="color:red">
+                    <summary style="color:white">When is the task due?</summary>
+                    Picking a day together with a date will create a task for the selected day during the week of the picked date!
+                </details>
                 <input class="form-control text-center" id="datepicker_create" name="datepicker_create">
             </div>
 
             <hr>
 
             <div class="form-group">
-                <p>Repeat your task on the selected day(s)?</p>
+
+                <details style="color:red; padding-left:10px;">
+                    <summary style="color:white">Repeat your task on the selected day(s)?</summary>
+                    Repeating tasks will ignore set dates, as they will repeat on every selected day each week.
+                </details>
+
                 <br>
+
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" name="repeating" id="repeating">
                     <label class="form-check-label" for="repeating">Repeat</label>
@@ -115,7 +130,7 @@
 
         <hr>
 
-        <div class="col-md-12 text-center align-self-end form-group">
+        <div class=" text-center align-self-end form-group">
             <button type="submit" class="btn btn-primary">Save</button>
             <button type="button" class="btn btn-outline-secondary" onclick="closeCreateForm()">Close</button>
         </div>

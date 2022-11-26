@@ -2,7 +2,7 @@
     /* The popup form - hidden by default */
     .form-popup {
         width: 50%;
-        height: 58%;
+        height: 75%;
         position: absolute;
         top: 10%;
         left: 15%;
@@ -39,7 +39,13 @@
 
         <hr>
 
-        <p class="parag">For which day(s)?</p>
+        <div class="form-group">
+            <details style="color:red;">
+                <summary style="color:white">For which day(s)?</summary>
+                You can pick days without a due date! The tasks will be created during the current week by default.
+            </details>
+        </div>
+
         <div class="form-group">
 
             <div class="form-check">
@@ -104,14 +110,22 @@
             <hr>
 
             <div class="form-group text-center">
-                <label for="datepicker_edit">When is the task due?</label>
+                <details style="color:red">
+                    <summary style="color:white">When is the task due?</summary>
+                    Picking a day together with a date will create a task for the selected day during the week of the picked date!
+                </details>
                 <input class="form-control text-center" id="datepicker_edit" name="datepicker_edit">
             </div>
 
             <hr>
 
             <div class="form-group">
-                <p>Repeat your task on the selected day(s)?</p>
+
+                <details style="color:red; padding-left:10px;">
+                    <summary style="color:white">Repeat your task on the selected day(s)?</summary>
+                    Repeating tasks will ignore set dates, as they will repeat on every selected day each week.
+                </details>
+
                 <br>
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" name="repeating" id="repeating">
