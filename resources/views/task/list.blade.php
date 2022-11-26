@@ -24,7 +24,8 @@
 
 <x-app-layout>
     <div class="container">
-        @foreach($days as $day) {{-- the controller gives us an array of carbon days to render --}}
+        @foreach($days as $day)
+            {{-- the controller gives us an array of carbon days to render --}}
             <div class="card" style="width: 20rem;">
                 <div class="card-header text-center text-white bg-dark mb-3 align" style="font-size:15px;">
                     {{$day->dayName}}
@@ -34,12 +35,14 @@
                 <ul class="list-group list-group-flush">
                     <li>
                         <div class="form-check">
-                            @foreach($tasks as $task) {{-- each carbon day can have multiple tasks --}}
+                            @foreach($tasks as $task)
+
+                                {{-- each carbon day can have multiple tasks --}}
                                 <?php
 
                                 //carbon day names start with uppercase letters. for example "Monday, Tuesday.."
                                 //in the database, day names are all lowercase. they need to match "monday, tuesday.."
-                               $lowerCaseDayName = strtolower($day->dayName); //we convert the carbon day names to lower case
+                                $lowerCaseDayName = strtolower($day->dayName); //we convert the carbon day names to lower case
 
                                 //check if the day name matches our current day
                                 $task->$lowerCaseDayName == "on" ? $showTask = true : $showTask = false;
@@ -48,22 +51,74 @@
                                 $tasksDueDate = $task->date_due;
                                 $currentlyRenderedDay = $day->isoFormat('DD/MM/YYYY');
                                 $taskOnRepeat = $task->repeating;
+
+                                //if a due date is set
+                                //only display the task when the due date is between start and end of week
+                                //otherwise assume that it is a repeating task
+
+                                if (!isset($tasksDueDate)) {
+                                    $tasksDueDate = '';
+                                }
+
+                                $tasksDueDateWeek = (App\Http\Controllers\TaskCompletionController::getCarbonWeekFromDateDue($tasksDueDate));
+                                $startOfDueDateWeek = $tasksDueDateWeek->startOfWeek()->isoFormat('DD/MM/YYYY');
+                                $endOfDueDateWeek = $tasksDueDateWeek->endOfWeek()->isoFormat('DD/MM/YYYY');
+
                                 ?>
 
-                                {{-- if showTask is true and the date due lays in the future --}}
+                                {{-- if showTask is true
+                                    and the date due lays in between
+                                    the start of the tasks week and the end of the tasks week --}}
                                 {{-- or if the task is repeating --}}
                                 {{-- show the task on the current day --}}
+                                @if($showTask && (($tasksDueDate >= $startOfDueDateWeek && $tasksDueDate <= $endOfDueDateWeek) || $taskOnRepeat))
 
-                                @if($showTask && ($tasksDueDate >= $currentlyRenderedDay || $taskOnRepeat))
-                                    <input type="checkbox" class="form-check-input" id="{{$task->id}}">
-                                    <label class="form-check-label special-label" for="exampleCheck1"
-                                           onclick="openEditForm({{$task->id}})">{{$task->description}}</label>
-                                <hr>
+                                    {{--completions are recorded in a separate table. we are looking to see if the current task has a matching
+                                        completion as well, if yes, we are rendering checkboxes for each instance of the task
+
+                                        the reason for this is: the task is a single entity, separated from all the instances of it
+                                        the task can be edited as a single entity and it will be edited across the board, it is perceived as the same task
+                                        however the same task can occur on multiple days, for example: doing chores
+                                        the task is the same, however each day is a different instance of it
+
+                                        thats why completions exist separately and must be displayed in an individual way apart from task entities
+                                    --}}
+                                    @foreach($taskCompletions as $completion)
+
+                                        @if($currentlyRenderedDay == $completion->date && $task->id == $completion->task_fid)
+
+                                            <div id="task{{$completion->id}}">
+
+                                                <input type="checkbox" class="form-check-input"
+                                                       name="complete{{$completion->id}}"
+                                                       id="complete{{$completion->id}}"
+                                                       @if($completion->completed == 'on')
+                                                           {{'checked'}}
+                                                       @endif onclick="completeTask({{ $completion->id }})">
+
+                                                <label class="form-check-label special-label" for="exampleCheck1"
+                                                       onclick="openEditForm({{$task->id}})">{{$task->description}}</label>
+
+                                                <button type="button" onclick="deleteTask({{$completion->id}})"
+                                                        style="padding-bottom:5%; color:red;"
+                                                        id="delete{{$completion->id}}" class="btn-close float-left"
+                                                        aria-label="Close">X
+                                                </button>
+                                            </div>
+                                        @endif
+                                    @endforeach
+
                                 @endif
-
                             @endforeach
-                        </div>
+                                <hr>
+                                {{-- when tasks finished rendering, add a create button --}}
 
+                                <button type="button" onclick="openCreateForm({{strtolower($day->dayName)}})"
+                                        style="padding-bottom:5%; color:green; font-weight:bold; font-size:16px;"
+                                        class="btn-close float-right"
+                                        aria-label="Close">+
+                                </button>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -72,14 +127,6 @@
         @include('task.create')
     </div>
 
-    <button type="button" class="btn btn-outline-secondary" onclick="openCreateForm()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus"
-             viewBox="0 0 16 16">
-            <path
-                d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"></path>
-        </svg>
-        <span class="visually-hidden">Button</span>
-    </button>
 
 
 </x-app-layout>
@@ -91,12 +138,17 @@
 
 <script>
 
+    function openCreateForm(dayName) {
+        //check whichever day the created button was clicked on
+        //if the plus button is clicked under monday, monday will be checked by default
+        $(dayName).prop("checked", true);
 
-    function openCreateForm() {
+        //show the create form
         document.getElementById("createTaskForm").style.display = "block";
     }
 
     function closeCreateForm() {
+        document.getElementById("create_task").reset();
         document.getElementById("createTaskForm").style.display = "none";
     }
 
@@ -108,6 +160,47 @@
 
     function closeEditForm() {
         document.getElementById("editTaskForm").style.display = "none";
+    }
+
+    function completeTask(taskCompletionId) {
+
+        var completed = {completed: $('#complete' + taskCompletionId).prop("checked")};
+
+        $.ajax({
+            type: "GET",
+            url: '/list/create_completions/' + taskCompletionId,
+            data: completed,
+            success: function (response) {
+                if (response.status == 404) {
+                    //TODO: display error message
+                }
+            }
+        });
+    }
+
+    function deleteTask(taskCompletionId) {
+
+        if (taskCompletionId) {
+            $('#task' + taskCompletionId).remove();
+
+            var postData = {
+                'completionId': taskCompletionId
+            }
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: "POST",
+                url: '/list/delete_completion/',
+                data: postData,
+                success: function (response) {
+                    if (response.status == 404) {
+                        //TODO: display error message
+                    }
+                }
+            });
+        }
     }
 
 </script>
