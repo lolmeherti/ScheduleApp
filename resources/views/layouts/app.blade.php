@@ -14,6 +14,17 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
+
+    @if ($errors->any())
+        <div class="alert alert-danger text-center">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <body class="font-sans antialiased bg-dark">
         <div class="min-h-screen bg-gradient bg-gradient bg-gradient">
             @include('layouts.navigation')
