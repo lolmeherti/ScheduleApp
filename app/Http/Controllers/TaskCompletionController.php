@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Task;
 use App\Models\TaskCompletion;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -39,12 +41,11 @@ class TaskCompletionController extends Controller
     public function store(Request $request, int $taskFid)
     {
 
-        if(isset($request->datepicker_create)){
+        if (isset($request->datepicker_create)) {
             $week = $this->getCarbonWeekFromDateDue($request->datepicker_create);
         } else {
             $week = Carbon::now();
         }
-
 
         if (isset($request->monday)) {
             $taskDays['monday'] = $week->startOfWeek()->isoFormat('DD/MM/YYYY');//start of week is always monday
@@ -68,14 +69,17 @@ class TaskCompletionController extends Controller
             $taskDays['sunday'] = $week->startOfWeek()->endOfWeek()->isoFormat('DD/MM/YYYY');
         }
 
-            foreach ($taskDays as $day => $date) {
-                DB::table('task_completions')->insert([
+        foreach ($taskDays as $day => $date) {
+
+            TaskCompletion::updateOrCreate(
+                [
                     'task_fid' => $taskFid,
                     'date' => $date,
                     'completed' => 'off',
-                    'created_at' => now()
-                ]);
-            }
+                ],
+                ['updated_at' => now()]
+            );
+        }
     }
 
     /**
@@ -156,12 +160,12 @@ class TaskCompletionController extends Controller
      * @param array $tasks
      * @return array
      */
-    public static function getTasksCompletions($tasks) : array {
+    public static function getTasksCompletions($tasks): array
+    {
         $result = array();
 
-        if(isset($tasks))
-        {
-            foreach($tasks as $task) {
+        if (isset($tasks)) {
+            foreach ($tasks as $task) {
                 $result = DB::table('task_completions')
                     ->where('task_fid', $task->id)
                     ->get()
@@ -171,4 +175,63 @@ class TaskCompletionController extends Controller
 
         return $result;
     }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function completeTaskById(Request $request) : JsonResponse
+    {
+        //filter var with FILTER_VALIDATE_BOOLEAN flag to make sure its a boolean value
+        filter_var($request->completed,FILTER_VALIDATE_BOOLEAN) ? $completed = "on" : $completed = "off";
+
+        $updated = TaskCompletion::where('id', $request->id)
+            ->update([
+                'completed' => $completed]);
+
+        if ($updated) {
+            return response()->json([
+                'status' => 200
+            ]);
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Task not found!',
+            ]);
+        }
+    }
+
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function deleteTaskCompletionTaskById(Request $request) : JsonResponse
+    {
+
+        $taskCompletionTaskFid = TaskCompletion::where('id', $request->completionId)->value('task_fid');
+
+        //if this is the only completion and its getting deleted, we want to delete the task from the task table before we delete the last completion
+        $completionsLeftForTask = TaskCompletion::where('task_fid', $taskCompletionTaskFid)->get()->toArray();
+
+        //if we are deleting the very last completion
+        if(count($completionsLeftForTask) == 1){
+            Task::destroy($taskCompletionTaskFid);
+        }
+
+        $deleted = TaskCompletion::where('id', $request->completionId)
+            ->delete();
+
+        if ($deleted) {
+            return response()->json([
+                'status' => 200
+            ]);
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Task not found!',
+            ]);
+        }
+    }
+
 }

@@ -5,12 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class TaskController extends Controller
 {
@@ -24,12 +23,17 @@ class TaskController extends Controller
         //by default, this function returns the current week
         //the function returns an array with all carbon day objects
         //between the two dates
+        //TODO: make it work with date picker
         $days = $this->getAllDaysBetweenTwoDates();
 
         //gets all tasks from the carbon days passed in array param
+        //TODO: make it work with date picker
         $tasks = $this->getTasksForDaysOfWeek();
 
-        return view('task.list', compact('days', 'tasks'));
+        //fetch completion status for tasks
+        $taskCompletions = TaskCompletionController::getTasksCompletions($tasks);
+
+        return view('task.list', compact('days', 'tasks', 'taskCompletions'));
     }
 
     /**
@@ -51,12 +55,22 @@ class TaskController extends Controller
     public function store(Request $request): RedirectResponse
     {
 
-        $request->validate(
+        //TODO: better error handling and error display with ajax
+//        $validator = Validator::make($request->all(), [
+//            'description' => ['required', 'string', 'max:1000'],
+//            'date_due' => 'required_without:repeating',
+//            'repeating' => 'required_without:date_due'
+//        ]);
+
+            //tasks table section
+             $request->validate(
             [
-                'description' => ['required', 'string', 'max:1000']
+                'description' => ['required', 'string', 'max:1000'],
+                'datepicker_create' => 'required_without:repeating',
+                'repeating' => 'required_without:datepicker_create'
             ]);
 
-        $insertTask = DB::table('tasks')->insert([
+        $insertTaskId = DB::table('tasks')->insertGetId([
             'description' => $request->input('description'),
             'repeating' => $request->input('repeating') ?? "off",
             'monday' => $request->input('monday') ?? "off",
@@ -67,11 +81,17 @@ class TaskController extends Controller
             'saturday' => $request->input('saturday') ?? "off",
             'sunday' => $request->input('sunday') ?? "off",
             'time_due' => $request->input('timepicker') ?? null,
-            'date_due' => $request->input('datepicker_create') ?? null,
-            'created_at' => now()
+            'date_due' => $request->input('datepicker_create') ?? null
         ]);
+        //task table section
 
-        if ($insertTask) {
+
+        //task completion table section
+            (new TaskCompletionController)->store($request, $insertTaskId);
+
+        //task completion table section
+
+        if ($insertTaskId) {
             return redirect()->back()->with('success', 'task created successfully!');
         } else {
             return redirect()->back()->with('error', 'something went wrong!');
@@ -83,9 +103,9 @@ class TaskController extends Controller
      * This function ends up being called by Ajax from the edit view
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function show(Request $request): \Illuminate\Http\JsonResponse
+    public function show(Request $request): JsonResponse
     {
         $editFormData = $this->getTaskById($request->id);
         if ($editFormData) {
@@ -111,13 +131,16 @@ class TaskController extends Controller
     {
         $request->validate(
             [
-                'description' => ['required', 'string', 'max:1000']
+                'description' => ['required', 'string', 'max:1000'],
+                'datepicker_edit' => 'required_without:repeating',
+                'repeating' => 'required_without:datepicker_edit',
             ]);
 
         Task::where('id', $request->id)
             ->update([
                 'description' => $request->input('description'),
                 'repeating' => $request->input('repeating'),
+                'monday' => $request->input('monday'),
                 'tuesday' => $request->input('tuesday'),
                 'wednesday' => $request->input('wednesday'),
                 'thursday' => $request->input('thursday'),
@@ -128,6 +151,11 @@ class TaskController extends Controller
                 'date_due' => $request->input('datepicker_edit'),
                 'updated_at' => now(),
             ]);
+
+        //task completion table section
+        (new TaskCompletionController)->store($request, $request->id);
+
+        //task completion table section
 
         return redirect()->back()->with('success', 'task created successfully!');
     }
@@ -146,13 +174,14 @@ class TaskController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param \App\Models\Task $task
-     * @return \Illuminate\Http\Response
+     * This function only gets called from TaskCompletionController by design
+     * We are already making sure that a taskId is passed and that it is a valid Integer
+     * @param int $taskId
+     * @return void
      */
-    public function destroy(Task $task)
+    public function destroy(int $taskId) : Void
     {
-        //
+        Task::where('id', $taskId)->delete();
     }
 
     /**
@@ -230,9 +259,12 @@ class TaskController extends Controller
      */
     public function getTaskById(int $taskId): array
     {
-
         $task = Task::where('id', $taskId)->firstOrFail()->toArray();
 
-        return $task;
+        if($task){
+            return $task;
+        }
+
+        return [];
     }
 }
