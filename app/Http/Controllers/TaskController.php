@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\View\View;
 
 class TaskController extends Controller
 {
@@ -52,7 +53,7 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(): \Illuminate\Http\Response
     {
         //
     }
@@ -60,21 +61,14 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @param Request $request
+     * @return RedirectResponse
      */
     public function store(Request $request): RedirectResponse
     {
 
-        //TODO: better error handling and error display with ajax
-//        $validator = Validator::make($request->all(), [
-//            'description' => ['required', 'string', 'max:1000'],
-//            'date_due' => 'required_without:repeating',
-//            'repeating' => 'required_without:date_due'
-//        ]);
-
-            //tasks table section
-             $request->validate(
+        //tasks table section
+        $request->validate(
             [
                 'description' => ['required', 'string', 'max:1000', 'unique:tasks'],
                 'datepicker_create' => ['required_without:repeating'],
@@ -98,7 +92,7 @@ class TaskController extends Controller
 
 
         //task completion table section
-            (new TaskCompletionController)->store($request, $insertTaskId);
+        (new TaskCompletionController)->store($request, $insertTaskId);
 
         //task completion table section
 
@@ -113,7 +107,7 @@ class TaskController extends Controller
      * Display the specified resource.
      * This function ends up being called by Ajax from the edit view
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @return JsonResponse
      */
     public function show(Request $request): JsonResponse
@@ -174,8 +168,8 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Task $task
+     * @param Request $request
+     * @param Task $task
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Task $task)
@@ -190,7 +184,7 @@ class TaskController extends Controller
      * @param int $taskId
      * @return void
      */
-    public function destroy(int $taskId) : Void
+    public function destroy(int $taskId): void
     {
         Task::where('id', $taskId)->delete();
     }
@@ -273,10 +267,11 @@ class TaskController extends Controller
     {
         $task = Task::where('id', $taskId)->firstOrFail()->toArray();
 
-        if($task){
+        if ($task) {
             return $task;
         }
 
         return [];
     }
 }
+

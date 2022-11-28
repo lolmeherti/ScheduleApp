@@ -82,25 +82,25 @@
                         {{-- each carbon day can have multiple tasks --}}
                         @php
 
-                                //carbon day names start with uppercase letters. for example "Monday, Tuesday.."
-                                //in the database, day names are all lowercase. they need to match "monday, tuesday.."
-                                $lowerCaseDayName = strtolower($day->dayName); //we convert the carbon day names to lower case
+                            //carbon day names start with uppercase letters. for example "Monday, Tuesday.."
+                            //in the database, day names are all lowercase. they need to match "monday, tuesday.."
+                            $lowerCaseDayName = strtolower($day->dayName); //we convert the carbon day names to lower case
 
-                                //check if the day name matches our current day
-                                $task->$lowerCaseDayName == "on" ? $showTask = true : $showTask = false;
+                            //check if the day name matches our current day
+                            $task->$lowerCaseDayName == "on" ? $showTask = true : $showTask = false;
 
-                                //these variables are merely to aid readability of the code
-                                $tasksDueDate = $task->date_due;
-                                $currentlyRenderedDay = $day->isoFormat('DD/MM/YYYY');
-                                $taskOnRepeat = $task->repeating;
+                            //these variables are merely to aid readability of the code
+                            $tasksDueDate = $task->date_due;
+                            $currentlyRenderedDay = $day->isoFormat('DD/MM/YYYY');
+                            $taskOnRepeat = $task->repeating;
 
-                                //if a due date is set
-                                //only display the task when the due date is between start and end of week
-                                //otherwise assume that it is a repeating task
+                            //if a due date is set
+                            //only display the task when the due date is between start and end of week
+                            //otherwise assume that it is a repeating task
 
-                                if (!isset($tasksDueDate)) {
-                                    $tasksDueDate = '';
-                                }
+                            if (!isset($tasksDueDate)) {
+                                $tasksDueDate = '';
+                            }
 
                             $tasksDueDateWeek = DateTime::createFromFormat('d/m/Y', $tasksDueDate);
 
@@ -119,13 +119,13 @@
                         {{-- show the task on the current day --}}
                         @if(($showTask || $currentlyRenderedDay == $tasksDueDate) && (($tasksDueDateWeek >= $startOfDueDateWeek && $tasksDueDateWeek <= $endOfDueDateWeek) || $taskOnRepeat))
 
-                                    {{--completions are recorded in a separate table. we are looking to see if the current task has a matching
-                                        completion as well, if yes, we are rendering checkboxes for each instance of the task
+                            {{--completions are recorded in a separate table. we are looking to see if the current task has a matching
+                                completion as well, if yes, we are rendering checkboxes for each instance of the task
 
-                                        the reason for this is: the task is a single entity, separated from all the instances of it
-                                        the task can be edited as a single entity and it will be edited across the board, it is perceived as the same task
-                                        however the same task can occur on multiple days, for example: doing chores
-                                        the task is the same, however each day is a different instance of it
+                                the reason for this is: the task is a single entity, separated from all the instances of it
+                                the task can be edited as a single entity and it will be edited across the board, it is perceived as the same task
+                                however the same task can occur on multiple days, for example: doing chores
+                                the task is the same, however each day is a different instance of it
 
                                 thats why completions exist separately and must be displayed in an individual way apart from task entities
                             --}}
