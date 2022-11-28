@@ -1,24 +1,21 @@
 <style>
     /* The popup form - hidden by default */
     .form-popup {
-        width: 50%;
-        height: 75%;
-        position: absolute;
-        top: 10%;
-        left: 15%;
+        margin-left:15%;
+        margin-top:2%;
+        float: none;
+        width:35%;
         display: none;
-        z-index: 10;
-        opacity: 0.9;
+        opacity: 0.95;
+
     }
 
     .form-group {
         padding: 10px;
     }
-
     .form-check {
         padding-right: 10px;
     }
-
 
 </style>
 
