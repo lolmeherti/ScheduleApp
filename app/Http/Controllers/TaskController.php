@@ -37,7 +37,7 @@ class TaskController extends Controller
         //the function returns an array with all carbon day objects
         //between the two dates
         //TODO: make it work with date picker
-        $days = $this->getAllDaysBetweenTwoDates();
+        $days = $this->getAllDaysBetweenTwoDates($startOfWeek ?? "", $endOfWeek ?? "");
 
         //gets all tasks from the carbon days passed in array param
         //TODO: make it work with date picker
