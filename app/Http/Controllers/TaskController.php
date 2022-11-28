@@ -15,11 +15,24 @@ class TaskController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\View\View
+     * @param Request $request
+     * @return
      */
-    public function index()
+    public function index(Request $request)
     {
+
+        if (isset($request->selected_week)) {
+            $selectedWeek = TaskCompletionController::getCarbonWeekFromDateString($request->selected_week);
+
+            $startOfWeek = $selectedWeek->startOfWeek()->format('d-m-Y H:i');
+            $endOfWeek = $selectedWeek->EndOfWeek()->format('d-m-Y H:i');
+
+            $dateForWeekSelect = $request->selected_week;
+        } else {
+            $carbonNow = Carbon::now();
+            $dateForWeekSelect = $carbonNow->format('d/m/Y');
+        }
+
         //by default, this function returns the current week
         //the function returns an array with all carbon day objects
         //between the two dates
@@ -28,12 +41,10 @@ class TaskController extends Controller
 
         //gets all tasks from the carbon days passed in array param
         //TODO: make it work with date picker
-        $tasks = $this->getTasksForDaysOfWeek();
+        $tasks = $this->getTasksForDaysOfWeek($days);
 
-        //fetch completion status for tasks
-        $taskCompletions = TaskCompletionController::getTasksCompletions($tasks);
 
-        return view('task.list', compact('days', 'tasks', 'taskCompletions'));
+        return view('task.list', compact('days', 'tasks', 'dateForWeekSelect'));
     }
 
     /**
