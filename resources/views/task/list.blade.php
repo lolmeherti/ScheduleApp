@@ -23,7 +23,29 @@
 </style>
 
 <x-app-layout>
-    <div class="container">
+    @include('task.edit')
+    @include('task.create')
+
+    @php
+        $carbonNow = \Carbon\Carbon::now();
+        $todayDayName = \Carbon\Carbon::now()->format('l');
+        $todayDate = $carbonNow->format('d/m/Y');
+        $thisWeek = $carbonNow->startOfWeek();
+    @endphp
+
+    {{--timeframe navigation--}}
+    <form action="{{route('list')}}" id="custom_week" name="custom_week">
+        <div class="position:relative" style="margin: 8 auto; padding-right:4.5%; float: none; width:25%;">
+            <input class="form-control text-center bg-dark text-white border border-warning rounded" id="selected_week"
+                   name="selected_week" value="{{$dateForWeekSelect}}"
+                   onclick="showSelectedWeek()"
+            >
+        </div>
+    </form>
+
+
+    <div class="container" style="margin: 0 auto; float: none;">
+
         @foreach($days as $day)
             {{-- the controller gives us an array of carbon days to render --}}
             <div class="card" style="width: 20rem;">
@@ -133,11 +155,12 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.12.1/themes/ui-darkness/jquery-ui.css">
 
 
 <script>
 
+    //open & close create form scripts
     function openCreateForm(dayName) {
         //check whichever day the created button was clicked on
         //if the plus button is clicked under monday, monday will be checked by default
@@ -152,6 +175,9 @@
         document.getElementById("createTaskForm").style.display = "none";
     }
 
+    //open & close create form scripts
+
+    //open & close edit form scripts
     function openEditForm(taskId) {
         //request data for this form by ajax
         fillTaskEditForm(taskId);
@@ -162,6 +188,9 @@
         document.getElementById("editTaskForm").style.display = "none";
     }
 
+    //open & close edit form scripts
+
+    //complete a task script
     function completeTask(taskCompletionId) {
 
         var completed = {completed: $('#complete' + taskCompletionId).prop("checked")};
@@ -178,6 +207,9 @@
         });
     }
 
+    //complete a task script
+
+    //delete a task script
     function deleteTask(taskCompletionId) {
 
         if (taskCompletionId) {
@@ -202,6 +234,27 @@
             });
         }
     }
+
+    //delete a task script
+
+    //week selection scripts
+    $(function () {
+        $("#selected_week").datepicker({
+            minDate: 0,
+            dateFormat: 'dd/mm/yy'
+        });
+    });
+
+    function showSelectedWeek() {
+
+        $('#selected_week').datepicker().on('change', function () {
+
+            document.getElementById("custom_week").submit();
+        });
+    }
+
+    //week selection script
+
 
 </script>
 
