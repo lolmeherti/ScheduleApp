@@ -157,7 +157,6 @@ class TaskCompletionController extends Controller
         //explode makes an array of all values separated by /
         //the format is dd/mm/yyyy, so the first element contains day, second contains month and third contains year.
         if ($dateDue) {
-
             $dateDue = explode('/', $dateDue);
             $day = $dateDue[0];
             $month = $dateDue[1];
@@ -174,17 +173,15 @@ class TaskCompletionController extends Controller
      * @param array $tasks
      * @return array
      */
-    public static function getTasksCompletions($tasks): array
+    public static function getTasksCompletionsByTaskId($taskId): array
     {
         $result = array();
 
-        if (isset($tasks)) {
-            foreach ($tasks as $task) {
+        if (isset($taskId)) {
                 $result = DB::table('task_completions')
-                    ->where('task_fid', $task->id)
+                    ->where('task_fid', $taskId)
                     ->get()
                     ->toArray();
-            }
         }
 
         return $result;
