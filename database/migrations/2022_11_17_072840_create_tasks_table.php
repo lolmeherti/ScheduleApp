@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
-            $table->string('description');
+            $table->string('description')->unique();
             $table->string('repeating')->nullable()->default('off');
             $table->string('monday')->nullable()->default('off');
             $table->string('tuesday')->nullable()->default('off');
