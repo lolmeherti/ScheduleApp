@@ -13,13 +13,11 @@
         cursor: pointer;
     }
 
-    .list-group {
-        margin-left: 5px;
-    }
-
     .special-label {
         cursor: pointer;
     }
+
+
 </style>
 
 <x-app-layout>
@@ -47,20 +45,42 @@
     <div class="container" style="margin: 0 auto; float: none;">
 
         @foreach($days as $day)
-            {{-- the controller gives us an array of carbon days to render --}}
-            <div class="card" style="width: 20rem;">
-                <div class="card-header text-center text-white bg-dark mb-3 align" style="font-size:15px;">
-                    {{$day->dayName}}
-                    {{$day->day}}
-                    {{$day->format('F')}}
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li>
-                        <div class="form-check">
-                            @foreach($tasks as $task)
 
-                                {{-- each carbon day can have multiple tasks --}}
-                                <?php
+            @php
+                $todayDayName == $day->dayName ? $border = "border border-warning" : $border = "border border-white"
+            @endphp
+
+            {{-- the controller gives us an array of carbon days to render --}}
+            <div class="card" style="width: 30%;">
+                <div class="card-header text-center text-white bg-dark mb-0.5 align {{$border}}"
+                     @if($todayDayName == $day->dayName)
+                         class="border border-warning"
+                     @endif
+                     style="font-size:20px; padding-bottom:-5%; font-weight:bold;">
+                    @if($todayDayName == $day->dayName)
+                        {{'Today'}}
+                    @else
+                        {{$day->dayName}} <br>
+                    @endif
+                    <div style="font-size:15px">
+                        {{$day->isoFormat('Do MMM')}}
+                    </div>
+                </div>
+
+                <table class="table table-responsive table-dark table-sm text-center" style="margin-bottom:8px;">
+                    <thead>
+                    <tr>
+                        <th scope="col">Done</th>
+                        <th scope="col">Time</th>
+                        <th scope="col">Task</th>
+                        <th scope="col">Delete</th>
+                    </tr>
+                    </thead>
+
+                    @foreach($tasks as $task)
+
+                        {{-- each carbon day can have multiple tasks --}}
+                        @php
 
                                 //carbon day names start with uppercase letters. for example "Monday, Tuesday.."
                                 //in the database, day names are all lowercase. they need to match "monday, tuesday.."
@@ -82,18 +102,22 @@
                                     $tasksDueDate = '';
                                 }
 
-                                $tasksDueDateWeek = (App\Http\Controllers\TaskCompletionController::getCarbonWeekFromDateDue($tasksDueDate));
-                                $startOfDueDateWeek = $tasksDueDateWeek->startOfWeek()->isoFormat('DD/MM/YYYY');
-                                $endOfDueDateWeek = $tasksDueDateWeek->endOfWeek()->isoFormat('DD/MM/YYYY');
+                            $tasksDueDateWeek = DateTime::createFromFormat('d/m/Y', $tasksDueDate);
 
-                                ?>
+                            $tasksDueDateWeek = Carbon\Carbon::Parse($tasksDueDateWeek);
+                            $startOfDueDateWeek = $tasksDueDateWeek->startOfWeek();
 
-                                {{-- if showTask is true
-                                    and the date due lays in between
-                                    the start of the tasks week and the end of the tasks week --}}
-                                {{-- or if the task is repeating --}}
-                                {{-- show the task on the current day --}}
-                                @if($showTask && (($tasksDueDate >= $startOfDueDateWeek && $tasksDueDate <= $endOfDueDateWeek) || $taskOnRepeat))
+                            $startOfDueDateWeek = \Carbon\Carbon::parse($startOfDueDateWeek);
+                            $endOfDueDateWeek = $tasksDueDateWeek->endOfWeek();
+
+                        @endphp
+
+                        {{-- if showTask is true
+                            and the date due lays in between
+                            the start of the tasks week and the end of the tasks week --}}
+                        {{-- or if the task is repeating --}}
+                        {{-- show the task on the current day --}}
+                        @if(($showTask || $currentlyRenderedDay == $tasksDueDate) && (($tasksDueDateWeek >= $startOfDueDateWeek && $tasksDueDateWeek <= $endOfDueDateWeek) || $taskOnRepeat))
 
                                     {{--completions are recorded in a separate table. we are looking to see if the current task has a matching
                                         completion as well, if yes, we are rendering checkboxes for each instance of the task
@@ -103,52 +127,63 @@
                                         however the same task can occur on multiple days, for example: doing chores
                                         the task is the same, however each day is a different instance of it
 
-                                        thats why completions exist separately and must be displayed in an individual way apart from task entities
-                                    --}}
-                                    @foreach($taskCompletions as $completion)
+                                thats why completions exist separately and must be displayed in an individual way apart from task entities
+                            --}}
 
-                                        @if($currentlyRenderedDay == $completion->date && $task->id == $completion->task_fid)
+                            @php
+                                $taskCompletions = (App\Http\Controllers\TaskCompletionController::getTasksCompletionsByTaskId($task->id));
+                            @endphp
 
-                                            <div id="task{{$completion->id}}">
+                            @foreach($taskCompletions as $completion)
 
-                                                <input type="checkbox" class="form-check-input"
-                                                       name="complete{{$completion->id}}"
-                                                       id="complete{{$completion->id}}"
-                                                       @if($completion->completed == 'on')
-                                                           {{'checked'}}
-                                                       @endif onclick="completeTask({{ $completion->id }})">
 
-                                                <label class="form-check-label special-label" for="exampleCheck1"
-                                                       onclick="openEditForm({{$task->id}})">{{$task->description}}</label>
+                                <tbody>
 
-                                                <button type="button" onclick="deleteTask({{$completion->id}})"
-                                                        style="padding-bottom:5%; color:red;"
-                                                        id="delete{{$completion->id}}" class="btn-close float-left"
-                                                        aria-label="Close">X
-                                                </button>
-                                            </div>
-                                        @endif
-                                    @endforeach
+                                @if($currentlyRenderedDay == $completion->date && $task->id == $completion->task_fid)
 
+                                    <tr id="task{{$completion->id}}">
+
+                                        <td>
+                                            <input type="checkbox" class="form-check-input bg-dark border border-white"
+                                                   name="complete{{$completion->id}}"
+                                                   id="complete{{$completion->id}}"
+                                                   @if($completion->completed == 'on')
+                                                       {{'checked'}}
+                                                   @endif onclick="completeTask({{ $completion->id }})">
+                                        </td>
+
+                                        <td>
+                                            {{$task->time_due}}
+                                        </td>
+
+                                        <td>
+                                            <label class="special-label" for="exampleCheck1"
+                                                   onclick="openEditForm({{$task->id}})">{{$task->description}}</label>
+                                        </td>
+
+                                        <td>
+                                            <button type="button" onclick="deleteTask({{$completion->id}})"
+                                                    class="btn btn-danger btn-sm pull-right"
+                                                    style="color:red" ;
+                                                    id="delete{{$completion->id}}">Delete
+                                            </button>
+                                        </td>
+                                    </tr>
                                 @endif
-                            @endforeach
-                                <hr>
-                                {{-- when tasks finished rendering, add a create button --}}
+                                @endforeach
+                                @endif
+                                @endforeach
+                                </tbody>
+                </table>
+                <hr>
+                <button type="button" style="margin-top:5px;"
+                        onclick="openCreateForm({{strtolower($day->dayName)}})"
+                        class="btn btn-outline-dark btn-sm">New
+                </button>
 
-                                <button type="button" onclick="openCreateForm({{strtolower($day->dayName)}})"
-                                        style="padding-bottom:5%; color:green; font-weight:bold; font-size:16px;"
-                                        class="btn-close float-right"
-                                        aria-label="Close">+
-                                </button>
-                        </div>
-                    </li>
-                </ul>
             </div>
         @endforeach
-        @include('task.edit')
-        @include('task.create')
     </div>
-
 
 
 </x-app-layout>
