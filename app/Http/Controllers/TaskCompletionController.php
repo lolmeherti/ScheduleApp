@@ -69,7 +69,21 @@ class TaskCompletionController extends Controller
             $taskDays['sunday'] = $week->startOfWeek()->endOfWeek()->isoFormat('DD/MM/YYYY');
         }
 
-        foreach ($taskDays as $day => $date) {
+        if(isset($taskDays)){
+            foreach ($taskDays as $day => $date) {
+
+                TaskCompletion::updateOrCreate(
+                    [
+                        'task_fid' => $taskFid,
+                        'date' => $date,
+                        'completed' => 'off',
+                    ],
+                    ['updated_at' => now()]
+                );
+            }
+        } else {
+
+            $request->datepicker_create ? $date = $request->datepicker_create : $date = $request->datepicker_edit;
 
             TaskCompletion::updateOrCreate(
                 [
