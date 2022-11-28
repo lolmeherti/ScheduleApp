@@ -222,10 +222,10 @@ class TaskController extends Controller
      * Returns all tasks on the given days.
      * Given days are an array of Carbon dates
      * If parameter is not set, it returns all tasks.
-     * @param array $daysOfWeek
+     * @param $daysOfWeek
      * @return array{}
      */
-    public function getTasksForDaysOfWeek(array $daysOfWeek = array()): array
+    public function getTasksForDaysOfWeek($daysOfWeek = array()): array
     {
         if ($daysOfWeek) {
             $result = array();
@@ -245,6 +245,7 @@ class TaskController extends Controller
                     // these need to match the day AND the date
                     ->orWhere(strtolower($day->dayName), ['on'])
                     ->where('date_due', [$day->isoFormat('DD/MM/YYYY')])
+                    ->orderBy('time_due', 'ASC')
                     ->get()
                     ->toArray();
 
@@ -255,7 +256,7 @@ class TaskController extends Controller
             }
         } else {
             //if there are no days passed, by default we fetch all tasks
-            $tasks = DB::table('tasks')->get()->toArray();
+            $tasks = DB::table('tasks')->orderBy('time_due', 'ASC')->get()->toArray();
             $result = $tasks;
         }
 
