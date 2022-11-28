@@ -47,7 +47,7 @@
         @foreach($days as $day)
 
             @php
-                $todayDayName == $day->dayName ? $border = "border border-warning" : $border = "border border-white"
+                $todayDayName == $day->dayName && $todayDate == $day->format('d/m/Y') ? $border = "border border-warning" : $border = "border border-white"
             @endphp
 
             {{-- the controller gives us an array of carbon days to render --}}
@@ -57,13 +57,13 @@
                          class="border border-warning"
                      @endif
                      style="font-size:20px; padding-bottom:-5%; font-weight:bold;">
-                    @if($todayDayName == $day->dayName)
+                    @if($todayDayName == $day->dayName && $todayDate == $day->format('d/m/Y'))
                         {{'Today'}}
                     @else
                         {{$day->dayName}} <br>
                     @endif
                     <div style="font-size:15px">
-                        {{$day->isoFormat('Do MMM')}}
+                        {{$day->isoFormat('Do MMM Y')}}
                     </div>
                 </div>
 
@@ -275,8 +275,7 @@
     //week selection scripts
     $(function () {
         $("#selected_week").datepicker({
-            minDate: 0,
-            dateFormat: 'dd/mm/yy'
+            dateFormat: 'dd/mm/yy',
         });
     });
 
