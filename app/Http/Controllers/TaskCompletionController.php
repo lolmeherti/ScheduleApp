@@ -42,7 +42,7 @@ class TaskCompletionController extends Controller
     {
 
         if (isset($request->datepicker_create)) {
-            $week = $this->getCarbonWeekFromDateDue($request->datepicker_create);
+            $week = $this->getCarbonWeekFromDateString($request->datepicker_create);
         } else {
             $week = Carbon::now();
         }
@@ -137,7 +137,7 @@ class TaskCompletionController extends Controller
      * Returns current carbon date by default
      * @return Carbon
      */
-    public static function getCarbonWeekFromDateDue(string $dateDue): Carbon
+    public static function getCarbonWeekFromDateString(string $dateDue): Carbon
     {
         //we are exploding a date format such as 15/11/2022 at the / separator
         //explode makes an array of all values separated by /
