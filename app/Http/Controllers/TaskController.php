@@ -76,9 +76,9 @@ class TaskController extends Controller
             //tasks table section
              $request->validate(
             [
-                'description' => ['required', 'string', 'max:1000'],
-                'datepicker_create' => 'required_without:repeating',
-                'repeating' => 'required_without:datepicker_create'
+                'description' => ['required', 'string', 'max:1000', 'unique:tasks'],
+                'datepicker_create' => ['required_without:repeating'],
+                'repeating' => ['required_without_all:monday,tuesday,wednesday,thursday,friday,saturday,sunday,datepicker_create, nullable']
             ]);
 
         $insertTaskId = DB::table('tasks')->insertGetId([
@@ -135,7 +135,7 @@ class TaskController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\Task $task
+     * @param Task $task
      * @return RedirectResponse
      */
     public function edit(Request $request): RedirectResponse
