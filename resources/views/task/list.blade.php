@@ -25,6 +25,7 @@
     @include('task.create')
 
     @php
+        //current date info
         $carbonNow = \Carbon\Carbon::now();
         $todayDayName = \Carbon\Carbon::now()->format('l');
         $todayDate = $carbonNow->format('d/m/Y');
@@ -47,7 +48,11 @@
         @foreach($days as $day)
 
             @php
-                $todayDayName == $day->dayName && $todayDate == $day->format('d/m/Y') ? $border = "border border-warning" : $border = "border border-white"
+                //add border to today
+                $todayDayName == $day->dayName && $todayDate == $day->format('d/m/Y') ? $border = "border border-warning" : $border = "border border-white";
+
+                //fetch tasks on every given day
+                $tasks = App\Http\Controllers\TaskController::getTasksForDayOfWeek($day->dayName, $day->format('d/m/Y'));
             @endphp
 
             {{-- the controller gives us an array of carbon days to render --}}
@@ -117,7 +122,11 @@
                             the start of the tasks week and the end of the tasks week --}}
                         {{-- or if the task is repeating --}}
                         {{-- show the task on the current day --}}
-                        @if(($showTask || $currentlyRenderedDay == $tasksDueDate) && (($tasksDueDateWeek >= $startOfDueDateWeek && $tasksDueDateWeek <= $endOfDueDateWeek) || $taskOnRepeat))
+                        @if(($showTask ||
+                            $currentlyRenderedDay == $tasksDueDate) &&
+                            (($tasksDueDateWeek >= $startOfDueDateWeek &&
+                            $tasksDueDateWeek <= $endOfDueDateWeek) ||
+                            $taskOnRepeat))
 
                             {{--completions are recorded in a separate table. we are looking to see if the current task has a matching
                                 completion as well, if yes, we are rendering checkboxes for each instance of the task
@@ -135,7 +144,6 @@
                             @endphp
 
                             @foreach($taskCompletions as $completion)
-
 
                                 <tbody>
 

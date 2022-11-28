@@ -40,12 +40,7 @@ class TaskController extends Controller
         //TODO: make it work with date picker
         $days = $this->getAllDaysBetweenTwoDates($startOfWeek ?? "", $endOfWeek ?? "");
 
-        //gets all tasks from the carbon days passed in array param
-        //TODO: make it work with date picker
-        $tasks = $this->getTasksForDaysOfWeek($days);
-
-
-        return view('task.list', compact('days', 'tasks', 'dateForWeekSelect'));
+        return view('task.list', compact('days',  'dateForWeekSelect'));
     }
 
     /**
@@ -216,37 +211,32 @@ class TaskController extends Controller
      * Returns all tasks on the given days.
      * Given days are an array of Carbon dates
      * If parameter is not set, it returns all tasks.
-     * @param $daysOfWeek
+     * @param string $dayOfWeek
      * @return array{}
      */
-    public function getTasksForDaysOfWeek($daysOfWeek = array()): array
+    public static function getTasksForDayOfWeek(string $dayOfWeek, string $dateOfDay): array
     {
-        if ($daysOfWeek) {
-            $result = array();
 
-            //$daysOfWeek is an array with carbon days inside
-            foreach ($daysOfWeek as $day) {
+        $result = array();
 
-                $tasks = DB::table('tasks')
+        if ($dayOfWeek) {
+            $tasks = DB::table('tasks')
+                // tasks which are repeating are not date sensitive
+                // we are fetching all tasks which are repeating on the
+                // specific day of the week
+                ->where(strtolower($dayOfWeek), ['on'])
+                ->where('repeating', ['on'])
 
-                    // tasks which are repeating are not date sensitive
-                    // we are fetching all tasks which are repeating on the
-                    // specific day of the week
-                    ->where(strtolower($day->dayName), ['on'])
-                    ->where('repeating', ['on'])
+                // tasks which are not repeating are date sensitive
+                // these need to match the day AND the date
+                ->orWhere(strtolower($dayOfWeek), ['on'])
+                ->where('date_due', $dateOfDay)
+                ->orderBy('time_due', 'ASC')
+                ->get()
+                ->toArray();
 
-                    // tasks which are not repeating are date sensitive
-                    // these need to match the day AND the date
-                    ->orWhere(strtolower($day->dayName), ['on'])
-                    ->where('date_due', [$day->isoFormat('DD/MM/YYYY')])
-                    ->orderBy('time_due', 'ASC')
-                    ->get()
-                    ->toArray();
-
-                if ($tasks) {
-                    $result = $tasks;
-                }
-
+            if ($tasks) {
+                $result = $tasks;
             }
         } else {
             //if there are no days passed, by default we fetch all tasks
