@@ -123,7 +123,7 @@
                         {{-- or if the task is repeating --}}
                         {{-- show the task on the current day --}}
                         @if(($showTask ||
-                            $currentlyRenderedDay == $tasksDueDate) &&
+                            $currentlyRenderedDay >= $tasksDueDate) &&
                             (($tasksDueDateWeek >= $startOfDueDateWeek &&
                             $tasksDueDateWeek <= $endOfDueDateWeek) ||
                             $taskOnRepeat))
