@@ -40,7 +40,7 @@ class TaskController extends Controller
         //TODO: make it work with date picker
         $days = $this->getAllDaysBetweenTwoDates($startOfWeek ?? "", $endOfWeek ?? "");
 
-        return view('task.list', compact('days',  'dateForWeekSelect'));
+        return view('task.list', compact('days', 'dateForWeekSelect'));
     }
 
     /**
@@ -85,6 +85,12 @@ class TaskController extends Controller
         ]);
         //task table section
 
+
+        //if there was a date selected, we need to check whether there is also a weekday selected
+        if ($request->datepicker_create) {
+            TaskController::updateCorrectWeekdayIfNoWeekDaysSelected($request, $insertTaskId); //if there isn't a weekday selected, tick the correct weekday
+
+        }
 
         //task completion table section
         (new TaskCompletionController)->store($request, $insertTaskId);
@@ -230,7 +236,7 @@ class TaskController extends Controller
                 // tasks which are not repeating are date sensitive
                 // these need to match the day AND the date
                 ->orWhere(strtolower($dayOfWeek), ['on'])
-                ->where('date_due', $dateOfDay)
+                ->whereDate('date_due','<=', $dateOfDay)
                 ->orderBy('time_due', 'ASC')
                 ->get()
                 ->toArray();
@@ -263,5 +269,43 @@ class TaskController extends Controller
 
         return [];
     }
+
+    /**
+     * @param Request $request
+     * @param int $taskId
+     * @return void
+     */
+    public static function updateCorrectWeekdayIfNoWeekDaysSelected(Request $request, int $taskId): void
+    {
+        if ($request->datepicker_create) {
+            //if there is a date due but no day of week picked, automatically check the correct day
+            $weekDays = TaskCompletionController::getCarbonWeekFromDateString($request->datepicker_create);
+
+            $usersSelectedWeekDays = array();
+
+            foreach ($weekDays as $weekDay) {
+                if (strtolower($request->$weekDay->format('l')) == "on") {
+                    $usersSelectedWeekDays[] = $request->$weekDay->format('l');
+                }
+            }
+
+            //if the user selected none of the weekdays
+            if (!$usersSelectedWeekDays) {
+                //get the day of the due date, convert it to a day and turn the field on in the db
+                $dueDate = TaskCompletionController::getCarbonDayFromDateString($request->datepicker_create);
+                $dueDay = $dueDate->format('l');
+
+                //if we get this far, it means none of the days have been selected but a due date has been submitted
+                //we tick the due dates weekday on in the background
+
+                Task::where('id', $taskId)
+                    ->update([
+                        $dueDay => 'on',
+                        'updated_at' => now(),
+                    ]);
+            }
+        }
+    }
+
 }
 
