@@ -61,7 +61,7 @@
                      @if($todayDayName == $day->dayName)
                          class="border border-warning"
                      @endif
-                     style="font-size:20px; padding-bottom:-5%; font-weight:bold;">
+                     style="font-size:20px; padding-bottom:-5%; font-weight:bold; margin-bottom:0">
                     @if($todayDayName == $day->dayName && $todayDate == $day->format('d/m/Y'))
                         {{'Today'}}
                     @else
@@ -72,7 +72,7 @@
                     </div>
                 </div>
 
-                <table class="table table-responsive table-dark table-sm text-center" style="margin-bottom:8px;">
+                <table class="table table-responsive table-dark table-sm text-center" style="margin-bottom:8px; margin-top:0; padding-top:0;">
                     <thead>
                     <tr>
                         <th scope="col">Done</th>
