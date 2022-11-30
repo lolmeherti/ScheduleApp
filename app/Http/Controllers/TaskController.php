@@ -23,7 +23,7 @@ class TaskController extends Controller
     {
 
         if (isset($request->selected_week)) {
-            $selectedWeek = TaskCompletionController::getCarbonWeekFromDateString($request->selected_week);
+            $selectedWeek = TaskCompletionController::getCarbonDateFromDateString($request->selected_week);
 
             $startOfWeek = $selectedWeek->startOfWeek()->format('d-m-Y H:i');
             $endOfWeek = $selectedWeek->EndOfWeek()->format('d-m-Y H:i');
@@ -279,7 +279,7 @@ class TaskController extends Controller
     {
         if ($request->datepicker_create) {
             //if there is a date due but no day of week picked, automatically check the correct day
-            $weekDays = TaskCompletionController::getCarbonWeekFromDateString($request->datepicker_create);
+            $weekDays = TaskCompletionController::getCarbonDateFromDateString($request->datepicker_create);
 
             $usersSelectedWeekDays = array();
 
@@ -292,7 +292,7 @@ class TaskController extends Controller
             //if the user selected none of the weekdays
             if (!$usersSelectedWeekDays) {
                 //get the day of the due date, convert it to a day and turn the field on in the db
-                $dueDate = TaskCompletionController::getCarbonDayFromDateString($request->datepicker_create);
+                $dueDate = TaskCompletionController::getCarbonDateFromDateString($request->datepicker_create);
                 $dueDay = $dueDate->format('l');
 
                 //if we get this far, it means none of the days have been selected but a due date has been submitted

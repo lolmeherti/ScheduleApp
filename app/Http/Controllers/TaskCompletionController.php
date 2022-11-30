@@ -41,8 +41,12 @@ class TaskCompletionController extends Controller
     public function store(Request $request, int $taskFid)
     {
 
-        if (isset($request->datepicker_create)) {
-            $week = $this->getCarbonWeekFromDateString($request->datepicker_create);
+        //this function can be called either from edit and a task or from creating a brand new one
+        //they have a different name in the forms. we check which one it is and update or create with the appropriate one
+        $request->datepicker_create ? $date = $request->datepicker_create : $date = $request->datepicker_edit;
+
+        if ($date) {
+            $week = $this->getCarbonDateFromDateString($date);
         } else {
             $week = Carbon::now();
         }
@@ -70,21 +74,18 @@ class TaskCompletionController extends Controller
         }
 
         if(isset($taskDays)){
-            foreach ($taskDays as $day => $date) {
+            foreach ($taskDays as $weekDay => $weekDayDate) {
 
                 TaskCompletion::updateOrCreate(
                     [
                         'task_fid' => $taskFid,
-                        'date' => $date,
+                        'date' => $weekDayDate,
                         'completed' => 'off',
                     ],
                     ['updated_at' => now()]
                 );
             }
         } else {
-
-            $request->datepicker_create ? $date = $request->datepicker_create : $date = $request->datepicker_edit;
-
             TaskCompletion::updateOrCreate(
                 [
                     'task_fid' => $taskFid,
@@ -141,17 +142,16 @@ class TaskCompletionController extends Controller
         //
     }
 
+
     /**
-     * Returns Start&End of the week of specific date
-     *
      * This param refers to date_due column in the database
      * The required format is DD/MM/YYYY for the parameter
      * @param string $dateDue
      *
-     * Returns current carbon date by default
+     * Returns a Carbon Date Object from parameter string or else it returns a Carbon Date Object of today.
      * @return Carbon
      */
-    public static function getCarbonWeekFromDateString(string $dateDue): Carbon
+    public static function getCarbonDateFromDateString(string $dateDue): Carbon
     {
         //we are exploding a date format such as 15/11/2022 at the / separator
         //explode makes an array of all values separated by /
@@ -164,9 +164,7 @@ class TaskCompletionController extends Controller
 
             return Carbon::createFromDate($year, $month, $day, 'Europe/Vienna');
         }
-
         return Carbon::now();
-
     }
 
     /**
