@@ -243,4 +243,125 @@ class TaskCompletionController extends Controller
         }
     }
 
+    /**
+     * @param Request $request
+     * @return array
+     */
+    public static function getTaskDays(Request $request): array
+    {
+        //this function can be called either from edit and a task or from creating a brand new one
+        //they have a different name in the forms. we check which one it is and update or create with the appropriate one
+        $request->datepicker_create ? $dueDateOfTask = $request->datepicker_create : $dueDateOfTask = $request->datepicker_edit;
+
+        if ($dueDateOfTask) {
+            $week = TaskCompletionController::getCarbonDateFromDateString($dueDateOfTask);
+            //convert to carbon object for later comparisons
+            $dueDateOfTask = TaskCompletionController::getCarbonDateFromDateString($dueDateOfTask)->isoFormat('DD/MM/YYYY');
+        } else {
+            $week = Carbon::now();
+        }
+
+        $taskDays = array();
+
+        if (isset($request->monday)) {
+
+            $mondayDate = $week->startOfWeek()->isoFormat('DD/MM/YYYY'); //start of week is always monday
+            //we can't create tasks for past dates
+            //we check if the tasks date is in the future, if yes, add it to the array
+            if(strtotime($mondayDate) >= strtotime($dueDateOfTask)){
+                $taskDays['monday'] = $mondayDate;
+            }
+
+        }
+
+        if (isset($request->tuesday)) {
+
+            $tuesdayDate = $week->startOfWeek()->addDay(1)->isoFormat('DD/MM/YYYY');//add day 1 is tuesday ...etc
+            if(strtotime($tuesdayDate) >= strtotime($dueDateOfTask)){
+                $taskDays['tuesday'] = $tuesdayDate;
+            }
+
+        }
+
+        if (isset($request->wednesday)) {
+
+            $wednesdayDate = $week->startOfWeek()->addDay(2)->isoFormat('DD/MM/YYYY');
+            if(strtotime($wednesdayDate) >= strtotime($dueDateOfTask)){
+                $taskDays['wednesday'] = $wednesdayDate;
+            }
+
+        }
+
+        if (isset($request->thursday)) {
+
+            $thursdayDate = $week->startOfWeek()->addDay(3)->isoFormat('DD/MM/YYYY');
+            if(strtotime($thursdayDate) >= strtotime($dueDateOfTask)){
+                $taskDays['thursday'] = $thursdayDate;
+            }
+
+        }
+
+        if (isset($request->friday)) {
+
+            $fridayDate = $week->startOfWeek()->addDay(4)->isoFormat('DD/MM/YYYY');
+            if(strtotime($fridayDate) >= strtotime($dueDateOfTask)){
+                $taskDays['friday'] = $fridayDate;
+            }
+
+        }
+
+        if (isset($request->saturday)) {
+
+            $saturdayDate = $week->startOfWeek()->addDay(5)->isoFormat('DD/MM/YYYY');
+            if(strtotime($saturdayDate) >= strtotime($dueDateOfTask)){
+                $taskDays['saturday'] = $saturdayDate;
+            }
+
+        }
+
+        if (isset($request->sunday)) {
+
+            $sundayDate = $week->endOfWeek()->isoFormat('DD/MM/YYYY');
+            if(strtotime($sundayDate) >= strtotime($dueDateOfTask)){
+                $taskDays['sunday'] = $sundayDate;
+            }
+        }
+
+        return $taskDays;
+    }
+
+    /**
+     * Takes selected days as parameter.
+     * Removes all completions from days which are not present in parameter array.
+     * $selectedDays parameter should be a dictionary. Day of the week => date of the day. example: monday => 5/12/2022
+     * @param array $selectedDays
+     * @param string $dueDate
+     * @param int $taskFid
+     * @return void
+     */
+    public static function removeCompletionsFromUnselectedDays(array $selectedDays, string $dueDate, int $taskFid) : void
+    {
+        if(count($selectedDays) > 0)
+        {
+            //we are getting back the week during which the task is set
+            $weekdaysInWeekOfTask = TaskController::getEntireWeekFromCarbonDateString($dueDate);
+
+            //foreach weekday in the week of task
+            foreach($weekdaysInWeekOfTask as $day) {
+
+                $currentDay = strtolower($day->format('l'));
+                if(!array_key_exists($currentDay,$selectedDays)) { //check that the day isn't selected
+                    //if we find any days that were unselected,
+                    // remove those completions from task_completions table and
+                    TaskCompletion::where('task_fid', $taskFid)
+                        ->where('date', $day->isoFormat('DD/MM/YYYY'))
+                        ->delete();
+
+                    // set the weekdays to "off" in tasks table.
+                    TaskController::setWeekdayValueToOff($taskFid, $currentDay);
+                }
+            }
+        }
+    }
+
 }
