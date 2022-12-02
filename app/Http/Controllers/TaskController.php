@@ -307,5 +307,37 @@ class TaskController extends Controller
         }
     }
 
+    /**
+     * This function returns a week of carbon objects from a date string
+     * For example 2/12/2022 would return an array of 7 carbon dates
+     * starting from that weeks monday to sunday.
+     * @param string $dateString //format of this string is dd/mm/yyyy
+     * @return array of CarbonPeriod
+     */
+    public static function getEntireWeekFromCarbonDateString(string $dateString): array
+    {
+        $carbonDate = TaskCompletionController::getCarbonDateFromDateString($dateString);
+        $startOfWeek = $carbonDate->startOfWeek()->format('d-m-Y H:i');;
+        $endOfWeek = $carbonDate->endOfWeek()->format('d-m-Y H:i');;
+
+        return CarbonPeriod::create($startOfWeek, $endOfWeek)->toArray();
+    }
+
+    /**
+     * Turns a weekdays value to "off" in the tasks database
+     * @param int $taskId
+     * @param string $weekday lowercase weekday! for example: monday,tuesday ...etc
+     * @return void
+     */
+    public static function setWeekdayValueToOff(int $taskId, string $weekday): void
+    {
+        Task::where('id', $taskId)
+            ->update([
+                $weekday => "off",
+            ],
+                [
+                    'updated_at' => now()
+                ]);
+    }
 }
 
