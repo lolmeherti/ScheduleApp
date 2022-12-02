@@ -72,7 +72,7 @@
                     </div>
                 </div>
 
-                <table class="table table-responsive table-dark table-sm text-center" style="margin-bottom:8px; margin-top:0; padding-top:0;">
+                <table class="table table-responsive table-dark table-sm text-center table-hover" style="margin-bottom:8px; margin-top:0; padding-top:0;">
                     <thead>
                     <tr>
                         <th scope="col">Done</th>
@@ -151,7 +151,7 @@
 
                                     <tr id="task{{$completion->id}}">
 
-                                        <td>
+                                        <td style="padding-top:4px;" >
                                             <input type="checkbox" class="form-check-input bg-dark border border-white"
                                                    name="complete{{$completion->id}}"
                                                    id="complete{{$completion->id}}"
@@ -160,19 +160,19 @@
                                                    @endif onclick="completeTask({{ $completion->id }})">
                                         </td>
 
-                                        <td>
-                                            {{$task->time_due}}
+                                        <td @if($taskOnRepeat == "off") style="padding-top:8px;"@endif>
+                                            @if($taskOnRepeat == "on") <button style="font-size:18px;">&#10227;</button> @endif  {{$task->time_due}}
                                         </td>
 
-                                        <td>
-                                            <label class="special-label" for="exampleCheck1"
+                                        <td style="padding-top:7px;">
+                                            <label class="special-label " for="exampleCheck1"
                                                    onclick="openEditForm({{$task->id}})">{{$task->description}}</label>
                                         </td>
 
                                         <td>
                                             <button type="button" onclick="deleteTask({{$completion->id}})"
                                                     class="btn btn-danger btn-sm pull-right"
-                                                    style="color:red" ;
+                                                    style="color:red";
                                                     id="delete{{$completion->id}}">Delete
                                             </button>
                                         </td>
