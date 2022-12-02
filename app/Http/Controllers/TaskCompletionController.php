@@ -215,21 +215,36 @@ class TaskCompletionController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function deleteTaskCompletionTaskById(Request $request) : JsonResponse
+    public function deleteTaskCompletionTaskById(Request $request): JsonResponse
     {
-
         $taskCompletionTaskFid = TaskCompletion::where('id', $request->completionId)->value('task_fid');
 
         //if this is the only completion and its getting deleted, we want to delete the task from the task table before we delete the last completion
         $completionsLeftForTask = TaskCompletion::where('task_fid', $taskCompletionTaskFid)->get()->toArray();
 
+
         //if we are deleting the very last completion
-        if(count($completionsLeftForTask) == 1){
+        if (count($completionsLeftForTask) == 1) {
             Task::destroy($taskCompletionTaskFid);
         }
 
+        //when a completion is deleted, edit the task and set the day value to off
+        //first we get the date string from completions_table
+        $currentDay = TaskCompletion::where('id', $request->completionId)->value('date');
+
+        //make a carbon object out of it
+        $currentDayCarbonObject = TaskCompletionController::getCarbonDateFromDateString($currentDay);
+
+        //get the completion's weekday in lowercase
+        $currentWeekDay = strtolower($currentDayCarbonObject->format('l'));
+
+        //turn the weekday off in task table
+        TaskController::setWeekdayValueToOff($taskCompletionTaskFid, $currentWeekDay);
+
+
         $deleted = TaskCompletion::where('id', $request->completionId)
             ->delete();
+
 
         if ($deleted) {
             return response()->json([
