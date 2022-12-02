@@ -22,6 +22,8 @@ class TaskController extends Controller
     public function index(Request $request)
     {
 
+        //TODO: CRONJOB FOR INSERTING REPEATING TASK COMPLETIONS!
+
         if (isset($request->selected_week)) {
             $selectedWeek = TaskCompletionController::getCarbonDateFromDateString($request->selected_week);
 
@@ -38,7 +40,7 @@ class TaskController extends Controller
         //the function returns an array with all carbon day objects
         //between the two dates
         //TODO: make it work with date picker
-        $days = $this->getAllDaysBetweenTwoDates($startOfWeek ?? "", $endOfWeek ?? "");
+        $days = TaskController::getAllDaysBetweenTwoDates($startOfWeek ?? "", $endOfWeek ?? "");
 
         return view('task.list', compact('days', 'dateForWeekSelect'));
     }
@@ -70,34 +72,38 @@ class TaskController extends Controller
                 'repeating' => ['required_without_all:monday,tuesday,wednesday,thursday,friday,saturday,sunday,datepicker_create, nullable']
             ]);
 
-        $insertTaskId = DB::table('tasks')->insertGetId([
-            'description' => $request->input('description'),
-            'repeating' => $request->input('repeating') ?? "off",
-            'monday' => $request->input('monday') ?? "off",
-            'tuesday' => $request->input('tuesday') ?? "off",
-            'wednesday' => $request->input('wednesday') ?? "off",
-            'thursday' => $request->input('thursday') ?? "off",
-            'friday' => $request->input('friday') ?? "off",
-            'saturday' => $request->input('saturday') ?? "off",
-            'sunday' => $request->input('sunday') ?? "off",
-            'time_due' => $request->input('timepicker') ?? null,
-            'date_due' => $request->input('datepicker_create') ?? null
-        ]);
-        //task table section
+        $validDaysSelected = TaskCompletionController::getTaskDays($request);
+
+        if (count($validDaysSelected) > 0 || $request->repeating == "on") {
+            $insertTaskId = DB::table('tasks')->insertGetId([
+                'description' => $request->input('description'),
+                'repeating' => $request->input('repeating') ?? "off",
+                'monday' => $request->input('monday') ?? "off",
+                'tuesday' => $request->input('tuesday') ?? "off",
+                'wednesday' => $request->input('wednesday') ?? "off",
+                'thursday' => $request->input('thursday') ?? "off",
+                'friday' => $request->input('friday') ?? "off",
+                'saturday' => $request->input('saturday') ?? "off",
+                'sunday' => $request->input('sunday') ?? "off",
+                'time_due' => $request->input('timepicker') ?? null,
+                'date_due' => $request->input('datepicker_create') ?? null
+            ]);
+            //task table section
 
 
-        //if there was a date selected, we need to check whether there is also a weekday selected
-        if ($request->datepicker_create) {
-            TaskController::updateCorrectWeekdayIfNoWeekDaysSelected($request, $insertTaskId); //if there isn't a weekday selected, tick the correct weekday
+            //if there was a date selected, we need to check whether there is also a weekday selected
+            if ($request->datepicker_create) {
+                TaskController::updateCorrectWeekdayIfNoWeekDaysSelected($request, $insertTaskId); //if there isn't a weekday selected, tick the correct weekday
 
+            }
+
+            //task completion table section
+            (new TaskCompletionController)->store($request, $insertTaskId);
+            //task completion table section
         }
 
-        //task completion table section
-        (new TaskCompletionController)->store($request, $insertTaskId);
 
-        //task completion table section
-
-        if ($insertTaskId) {
+        if (isset($insertTaskId)) {
             return redirect()->back()->with('success', 'task created successfully!');
         } else {
             return redirect()->back()->with('error', 'something went wrong!');
@@ -197,7 +203,7 @@ class TaskController extends Controller
      * @param string $endDate
      * @return array{}
      */
-    public function getAllDaysBetweenTwoDates(string $startDate = "", string $endDate = ""): array
+    public static function getAllDaysBetweenTwoDates(string $startDate = "", string $endDate = ""): array
     {
 
         $now = Carbon::now();
@@ -256,7 +262,7 @@ class TaskController extends Controller
     /**
      * Returns a task by Id if it exists
      * If it doesn't exist, it returns empty array
-     * @param $taskId
+     * @param int $taskId
      * @return array
      */
     public function getTaskById(int $taskId): array
