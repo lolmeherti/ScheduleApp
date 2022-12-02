@@ -7,6 +7,7 @@ use App\Models\TaskCompletion;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 class TaskCompletionController extends Controller
@@ -14,7 +15,7 @@ class TaskCompletionController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -24,7 +25,7 @@ class TaskCompletionController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -34,66 +35,50 @@ class TaskCompletionController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @param int $taskFid
-     * @return \Illuminate\Http\Response
+     * @return void
      */
-    public function store(Request $request, int $taskFid)
+    public function store(Request $request, int $taskFid) : void
     {
 
         //this function can be called either from edit and a task or from creating a brand new one
         //they have a different name in the forms. we check which one it is and update or create with the appropriate one
-        $request->datepicker_create ? $date = $request->datepicker_create : $date = $request->datepicker_edit;
+        $request->datepicker_create ? $dueDateOfTask = $request->datepicker_create : $dueDateOfTask = $request->datepicker_edit;
 
-        if ($date) {
-            $week = $this->getCarbonDateFromDateString($date);
-        } else {
-            $week = Carbon::now();
-        }
+        //getting the selected days from the edit/create form
+        $taskDays = $this->getTaskDays($request);
 
-        if (isset($request->monday)) {
-            $taskDays['monday'] = $week->startOfWeek()->isoFormat('DD/MM/YYYY');//start of week is always monday
-        }
-        if (isset($request->tuesday)) {
-            $taskDays['tuesday'] = $week->startOfWeek()->addDay(1)->isoFormat('DD/MM/YYYY');//add day 1 is tuesday ...etc
-        }
-        if (isset($request->wednesday)) {
-            $taskDays['wednesday'] = $week->startOfWeek()->addDay(2)->isoFormat('DD/MM/YYYY');
-        }
-        if (isset($request->thursday)) {
-            $taskDays['thursday'] = $week->startOfWeek()->addDay(3)->isoFormat('DD/MM/YYYY');
-        }
-        if (isset($request->friday)) {
-            $taskDays['friday'] = $week->startOfWeek()->addDay(4)->isoFormat('DD/MM/YYYY');
-        }
-        if (isset($request->saturday)) {
-            $taskDays['saturday'] = $week->startOfWeek()->addDay(5)->isoFormat('DD/MM/YYYY');
-        }
-        if (isset($request->sunday)) {
-            $taskDays['sunday'] = $week->startOfWeek()->endOfWeek()->isoFormat('DD/MM/YYYY');
-        }
+        $repeatingTask = $request->repeating;
 
-        if(isset($taskDays)){
+        if (count($taskDays) > 0) {
             foreach ($taskDays as $weekDay => $weekDayDate) {
 
-                TaskCompletion::updateOrCreate(
-                    [
-                        'task_fid' => $taskFid,
-                        'date' => $weekDayDate,
-                        'completed' => 'off',
-                    ],
-                    ['updated_at' => now()]
-                );
+                //only create completions in the past for repeating tasks
+                if (strtotime($weekDayDate) >= strtotime($dueDateOfTask) || $repeatingTask) {
+                    TaskCompletion::updateOrCreate(
+                        [
+                            'task_fid' => $taskFid,
+                            'date' => $weekDayDate,
+                            'completed' => 'off',
+                        ],
+                        ['updated_at' => now()]
+                    );
+                }
             }
-        } else {
+        } else { // in case the user only gives a date and no weekdays are selected
             TaskCompletion::updateOrCreate(
                 [
                     'task_fid' => $taskFid,
-                    'date' => $date,
+                    'date' => $dueDateOfTask,
                     'completed' => 'off',
                 ],
                 ['updated_at' => now()]
             );
+        }
+
+        if($dueDateOfTask){
+            TaskCompletionController::removeCompletionsFromUnselectedDays($taskDays, $dueDateOfTask, $taskFid);
         }
     }
 
@@ -101,7 +86,7 @@ class TaskCompletionController extends Controller
      * Display the specified resource.
      *
      * @param \App\Models\TaskCompletion $taskCompletion
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show(TaskCompletion $taskCompletion)
     {
@@ -112,7 +97,7 @@ class TaskCompletionController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param \App\Models\TaskCompletion $taskCompletion
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit(TaskCompletion $taskCompletion)
     {
@@ -124,7 +109,7 @@ class TaskCompletionController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param \App\Models\TaskCompletion $taskCompletion
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, TaskCompletion $taskCompletion)
     {
@@ -135,7 +120,7 @@ class TaskCompletionController extends Controller
      * Remove the specified resource from storage.
      *
      * @param \App\Models\TaskCompletion $taskCompletion
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy(TaskCompletion $taskCompletion)
     {
@@ -168,18 +153,18 @@ class TaskCompletionController extends Controller
     }
 
     /**
-     * @param array $tasks
+     * @param int $taskId
      * @return array
      */
-    public static function getTasksCompletionsByTaskId($taskId): array
+    public static function getTasksCompletionsByTaskId(int $taskId): array
     {
         $result = array();
 
-        if (isset($taskId)) {
-                $result = DB::table('task_completions')
-                    ->where('task_fid', $taskId)
-                    ->get()
-                    ->toArray();
+        if ($taskId > 0) {
+            $result = DB::table('task_completions')
+                ->where('task_fid', $taskId)
+                ->get()
+                ->toArray();
         }
 
         return $result;
@@ -189,10 +174,10 @@ class TaskCompletionController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function completeTaskById(Request $request) : JsonResponse
+    public function completeTaskById(Request $request): JsonResponse
     {
         //filter var with FILTER_VALIDATE_BOOLEAN flag to make sure its a boolean value
-        filter_var($request->completed,FILTER_VALIDATE_BOOLEAN) ? $completed = "on" : $completed = "off";
+        filter_var($request->completed, FILTER_VALIDATE_BOOLEAN) ? $completed = "on" : $completed = "off";
 
         $updated = TaskCompletion::where('id', $request->id)
             ->update([
