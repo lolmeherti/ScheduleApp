@@ -22,7 +22,7 @@
 <div class="form-popup bg-dark text-white" id="createTaskForm">
     <form id="create_task" name="create_task" method="post" action="{{ route('store') }}" autocomplete="off">
         @csrf
-        <div class="form-group text-center">
+        <div class="form-group text-center" style="padding-top:25px; font-size:18px;">
             <label for="description">Description of your task:</label>
             <textarea class="form-control" id="description" name="description" rows="3"></textarea>
         </div>
@@ -30,10 +30,7 @@
         <hr>
 
         <div class="form-group">
-        <details style="color:red;">
-            <summary style="color:white">For which day(s)?</summary>
-            You can pick days without a due date! The tasks will be created during the current week by default.
-        </details>
+           For which day(s)?
         </div>
 
         <div class="form-group">
@@ -100,27 +97,19 @@
             <hr>
 
             <div class="form-group text-center">
-                <details style="color:red">
-                    <summary style="color:white">When is the task due?</summary>
-                    Picking a day together with a date will create a task for the selected day during the week of the picked date!
-                </details>
+                  When is the task due?
                 <input class="form-control text-center" id="datepicker_create" name="datepicker_create">
             </div>
 
             <hr>
 
             <div class="form-group">
-
-                <details style="color:red; padding-left:10px;">
-                    <summary style="color:white">Repeat your task on the selected day(s)?</summary>
-                    Repeating tasks will ignore set dates, as they will repeat on every selected day each week.
-                </details>
-
+                  Repeat your task on the selected day(s)?
                 <br>
 
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" name="repeating" id="repeating">
-                    <label class="form-check-label" for="repeating">Repeat</label>
+                    <label class="form-check-label" for="repeating"> <button style="font-size:18px;">&#10227;</button> Repeat </label>
                 </div>
             </div>
         </div>
