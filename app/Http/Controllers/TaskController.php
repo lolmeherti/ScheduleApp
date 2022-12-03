@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\TaskCompletion;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
@@ -10,8 +11,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\View\View;
 
 class TaskController extends Controller
 {
@@ -22,8 +21,6 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-
-        //TODO: CRONJOB FOR INSERTING REPEATING TASK COMPLETIONS!
 
         if (isset($request->selected_week)) {
             $selectedWeek = TaskCompletionController::getCarbonDateFromDateString($request->selected_week);
@@ -75,6 +72,8 @@ class TaskController extends Controller
 
         $validDaysSelected = TaskCompletionController::getTaskDays($request);
 
+        //either we know which day the task is for
+        //or the task is repeating
         if (count($validDaysSelected) > 0 || $request->input('repeating') == "on") {
             $insertTaskId = DB::table('tasks')->insertGetId([
                 'description' => $request->input('description'),
@@ -103,7 +102,6 @@ class TaskController extends Controller
             (new TaskCompletionController)->store($request, $insertTaskId);
             //task completion table section
         }
-
 
         if (isset($insertTaskId)) {
             return redirect()->back()->with('success', 'task created successfully!');
@@ -361,6 +359,24 @@ class TaskController extends Controller
                 [
                     'updated_at' => now()
                 ]);
+    }
+
+    /**
+     * @param int
+     * @return array
+     */
+    public static function getAllTasksForLoggedInUser() : array
+    {
+
+        $tasks = Task::where('user_fid', Auth::id())
+            ->get()
+            ->toArray();
+
+        if ($tasks) {
+            return $tasks;
+        }
+
+        return [];
     }
 }
 
