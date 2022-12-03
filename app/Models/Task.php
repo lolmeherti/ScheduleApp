@@ -24,6 +24,7 @@ class Task extends Model
     public string $friday;
     public string $saturday;
     public string $sunday;
+    public int $user_fid;
     public string $due_date;
     public string $due_time;
 
@@ -43,6 +44,7 @@ class Task extends Model
         'friday',
         'saturday',
         'sunday',
+        'user_fid',
         'due_date',
         'due_time'
     ];

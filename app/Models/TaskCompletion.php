@@ -22,6 +22,7 @@ class TaskCompletion extends Model
     protected $fillable = [
         'id',
         'task_fid',
+        'user_fid',
         'date',
         'completed',
     ];
