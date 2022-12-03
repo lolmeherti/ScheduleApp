@@ -8,6 +8,7 @@ use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
@@ -74,7 +75,7 @@ class TaskController extends Controller
 
         $validDaysSelected = TaskCompletionController::getTaskDays($request);
 
-        if (count($validDaysSelected) > 0 || $request->repeating == "on") {
+        if (count($validDaysSelected) > 0 || $request->input('repeating') == "on") {
             $insertTaskId = DB::table('tasks')->insertGetId([
                 'description' => $request->input('description'),
                 'repeating' => $request->input('repeating') ?? "off",
@@ -85,6 +86,7 @@ class TaskController extends Controller
                 'friday' => $request->input('friday') ?? "off",
                 'saturday' => $request->input('saturday') ?? "off",
                 'sunday' => $request->input('sunday') ?? "off",
+                'user_fid' => Auth::id(),
                 'time_due' => $request->input('timepicker') ?? null,
                 'date_due' => $request->input('datepicker_create') ?? null
             ]);
@@ -92,7 +94,7 @@ class TaskController extends Controller
 
 
             //if there was a date selected, we need to check whether there is also a weekday selected
-            if ($request->datepicker_create) {
+            if ($request->input('datepicker_create')) {
                 TaskController::updateCorrectWeekdayIfNoWeekDaysSelected($request, $insertTaskId); //if there isn't a weekday selected, tick the correct weekday
 
             }
@@ -159,6 +161,7 @@ class TaskController extends Controller
                 'friday' => $request->input('friday'),
                 'saturday' => $request->input('saturday'),
                 'sunday' => $request->input('sunday'),
+                'user_fid' => Auth::id(),
                 'time_due' => $request->input('timepicker_edit'),
                 'date_due' => $request->input('datepicker_edit'),
                 'updated_at' => now(),
@@ -237,13 +240,18 @@ class TaskController extends Controller
                 // we are fetching all tasks which are repeating on the
                 // specific day of the week
                 ->where(strtolower($dayOfWeek), ['on'])
+                ->where('user_fid', [Auth::id()])
                 ->where('repeating', ['on'])
 
                 // tasks which are not repeating are date sensitive
                 // these need to match the day AND the date
                 ->orWhere(strtolower($dayOfWeek), ['on'])
-                ->whereDate('date_due','<=', $dateOfDay)
+                ->whereDate('date_due', '<=', $dateOfDay)
+                ->where('user_fid', [Auth::id()])
                 ->orderBy('time_due', 'ASC')
+
+                ->orWhereDate('date_due', '=', $dateOfDay)
+                ->where('user_fid', [Auth::id()])
                 ->get()
                 ->toArray();
 
@@ -252,7 +260,11 @@ class TaskController extends Controller
             }
         } else {
             //if there are no days passed, by default we fetch all tasks
-            $tasks = DB::table('tasks')->orderBy('time_due', 'ASC')->get()->toArray();
+            $tasks = DB::table('tasks')
+                ->where('user_fid', [Auth::id()])
+                ->orderBy('time_due', 'ASC')
+                ->get()
+                ->toArray();
             $result = $tasks;
         }
 
@@ -267,7 +279,10 @@ class TaskController extends Controller
      */
     public function getTaskById(int $taskId): array
     {
-        $task = Task::where('id', $taskId)->firstOrFail()->toArray();
+        $task = Task::where('id', $taskId)
+            ->where('user_fid', [Auth::id()])
+            ->firstOrFail()
+            ->toArray();
 
         if ($task) {
             return $task;
@@ -283,9 +298,9 @@ class TaskController extends Controller
      */
     public static function updateCorrectWeekdayIfNoWeekDaysSelected(Request $request, int $taskId): void
     {
-        if ($request->datepicker_create) {
+        if ($request->input('datepicker_create')) {
             //if there is a date due but no day of week picked, automatically check the correct day
-            $weekDays = TaskCompletionController::getCarbonDateFromDateString($request->datepicker_create);
+            $weekDays = TaskCompletionController::getCarbonDateFromDateString($request->input('datepicker_create'));
 
             $usersSelectedWeekDays = array();
 
@@ -298,13 +313,14 @@ class TaskController extends Controller
             //if the user selected none of the weekdays
             if (!$usersSelectedWeekDays) {
                 //get the day of the due date, convert it to a day and turn the field on in the db
-                $dueDate = TaskCompletionController::getCarbonDateFromDateString($request->datepicker_create);
+                $dueDate = TaskCompletionController::getCarbonDateFromDateString($request->input('datepicker_create'));
                 $dueDay = $dueDate->format('l');
 
                 //if we get this far, it means none of the days have been selected but a due date has been submitted
                 //we tick the due dates weekday on in the background
 
                 Task::where('id', $taskId)
+                    ->where('user_fid', [Auth::id()])
                     ->update([
                         $dueDay => 'on',
                         'updated_at' => now(),
@@ -338,6 +354,7 @@ class TaskController extends Controller
     public static function setWeekdayValueToOff(int $taskId, string $weekday): void
     {
         Task::where('id', $taskId)
+            ->where('user_fid', [Auth::id()])
             ->update([
                 $weekday => "off",
             ],

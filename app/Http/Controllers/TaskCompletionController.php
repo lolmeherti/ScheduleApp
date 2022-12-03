@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class TaskCompletionController extends Controller
@@ -44,12 +45,14 @@ class TaskCompletionController extends Controller
 
         //this function can be called either from edit and a task or from creating a brand new one
         //they have a different name in the forms. we check which one it is and update or create with the appropriate one
-        $request->datepicker_create ? $dueDateOfTask = $request->datepicker_create : $dueDateOfTask = $request->datepicker_edit;
+        $request->input('datepicker_create') ? $dueDateOfTask = $request->input('datepicker_create') : $dueDateOfTask = $request->input('datepicker_edit');
 
         //getting the selected days from the edit/create form
         $taskDays = $this->getTaskDays($request);
 
-        $repeatingTask = $request->repeating;
+        $repeatingTask = $request->input('repeating');
+
+        $authenticatedUserId = Auth::id();
 
         if (count($taskDays) > 0) {
             foreach ($taskDays as $weekDay => $weekDayDate) {
@@ -59,6 +62,7 @@ class TaskCompletionController extends Controller
                     TaskCompletion::updateOrCreate(
                         [
                             'task_fid' => $taskFid,
+                            'user_fid' => $authenticatedUserId,
                             'date' => $weekDayDate,
                             'completed' => 'off',
                         ],
@@ -70,6 +74,7 @@ class TaskCompletionController extends Controller
             TaskCompletion::updateOrCreate(
                 [
                     'task_fid' => $taskFid,
+                    'user_fid' => $authenticatedUserId,
                     'date' => $dueDateOfTask,
                     'completed' => 'off',
                 ],
@@ -162,6 +167,7 @@ class TaskCompletionController extends Controller
 
         if ($taskId > 0) {
             $result = DB::table('task_completions')
+                ->where('user_fid', [Auth::id()])
                 ->where('task_fid', $taskId)
                 ->get()
                 ->toArray();
@@ -177,9 +183,10 @@ class TaskCompletionController extends Controller
     public function completeTaskById(Request $request): JsonResponse
     {
         //filter var with FILTER_VALIDATE_BOOLEAN flag to make sure its a boolean value
-        filter_var($request->completed, FILTER_VALIDATE_BOOLEAN) ? $completed = "on" : $completed = "off";
+        filter_var($request->input('completed'), FILTER_VALIDATE_BOOLEAN) ? $completed = "on" : $completed = "off";
 
-        $updated = TaskCompletion::where('id', $request->id)
+        $updated = TaskCompletion::where('id', $request->input('id'))
+            ->where('user_fid', [Auth::id()])
             ->update([
                 'completed' => $completed]);
 
@@ -202,10 +209,15 @@ class TaskCompletionController extends Controller
      */
     public function deleteTaskCompletionTaskById(Request $request): JsonResponse
     {
-        $taskCompletionTaskFid = TaskCompletion::where('id', $request->completionId)->value('task_fid');
+        $taskCompletionTaskFid = TaskCompletion::where('id', $request->input('completionId'))
+            ->where('user_fid', [Auth::id()])
+            ->value('task_fid');
 
         //if this is the only completion and its getting deleted, we want to delete the task from the task table before we delete the last completion
-        $completionsLeftForTask = TaskCompletion::where('task_fid', $taskCompletionTaskFid)->get()->toArray();
+        $completionsLeftForTask = TaskCompletion::where('task_fid', $taskCompletionTaskFid)
+            ->where('user_fid', [Auth::id()])
+            ->get()
+            ->toArray();
 
 
         //if we are deleting the very last completion
@@ -215,7 +227,7 @@ class TaskCompletionController extends Controller
 
         //when a completion is deleted, edit the task and set the day value to off
         //first we get the date string from completions_table
-        $currentDay = TaskCompletion::where('id', $request->completionId)->value('date');
+        $currentDay = TaskCompletion::where('id', $request->input('completionId'))->value('date');
 
         //make a carbon object out of it
         $currentDayCarbonObject = TaskCompletionController::getCarbonDateFromDateString($currentDay);
@@ -227,7 +239,8 @@ class TaskCompletionController extends Controller
         TaskController::setWeekdayValueToOff($taskCompletionTaskFid, $currentWeekDay);
 
 
-        $deleted = TaskCompletion::where('id', $request->completionId)
+        $deleted = TaskCompletion::where('id', $request->input('completionId'))
+            ->where('user_fid', [Auth::id()])
             ->delete();
 
 
@@ -251,7 +264,7 @@ class TaskCompletionController extends Controller
     {
         //this function can be called either from edit and a task or from creating a brand new one
         //they have a different name in the forms. we check which one it is and update or create with the appropriate one
-        $request->datepicker_create ? $dueDateOfTask = $request->datepicker_create : $dueDateOfTask = $request->datepicker_edit;
+        $request->input('datepicker_create') ? $dueDateOfTask = $request->input('datepicker_create') : $dueDateOfTask = $request->input('datepicker_edit');
 
         if ($dueDateOfTask) {
             $week = TaskCompletionController::getCarbonDateFromDateString($dueDateOfTask);
@@ -354,6 +367,7 @@ class TaskCompletionController extends Controller
                     //if we find any days that were unselected,
                     // remove those completions from task_completions table and
                     TaskCompletion::where('task_fid', $taskFid)
+                        ->where('user_fid', [Auth::id()])
                         ->where('date', $day->isoFormat('DD/MM/YYYY'))
                         ->delete();
 
