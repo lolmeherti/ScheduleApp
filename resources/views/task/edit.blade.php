@@ -147,6 +147,9 @@
 
     function fillTaskEditForm(taskId) {
         $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
             type: "GET",
             url: '/list/show/' + taskId,
             success: function (response) {
