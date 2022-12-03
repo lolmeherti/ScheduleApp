@@ -24,9 +24,9 @@ return new class extends Migration
             $table->string('friday')->nullable()->default('off');
             $table->string('saturday')->nullable()->default('off');
             $table->string('sunday')->nullable()->default('off');
+            $table->foreignId('user_fid');
             $table->string('time_due')->nullable()->default('off');
             $table->string('date_due')->nullable()->default('off');
-            $table->string('completed')->nullable()->default('off');
             $table->timestamps();
         });
     }

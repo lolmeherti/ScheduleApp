@@ -15,9 +15,10 @@ return new class extends Migration
     {
         Schema::create('task_completions', function (Blueprint $table) {
             $table->id();
-            $table->string('task_fid');
             $table->string('date');
             $table->string('completed');
+            $table->foreignId('task_fid');
+            $table->foreignId('user_fid');
             $table->timestamps();
         });
     }
