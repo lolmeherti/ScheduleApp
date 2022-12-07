@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Ramsey\Uuid\Type\Time;
 
 class Task extends Model
 {
@@ -15,18 +17,7 @@ class Task extends Model
     protected $primaryKey = 'id';
     protected $table = 'tasks';
 
-    public mixed $description;
-    public string $repeating;
-    public string $monday;
-    public string $tuesday;
-    public string $wednesday;
-    public string $thursday;
-    public string $friday;
-    public string $saturday;
-    public string $sunday;
-    public int $user_fid;
-    public string $due_date;
-    public string $due_time;
+
 
 
     /**
@@ -45,7 +36,9 @@ class Task extends Model
         'saturday',
         'sunday',
         'user_fid',
-        'due_date',
-        'due_time'
+        'time_due',
+        'date_due',
+        'updated_at',
+        'created_at',
     ];
 }
