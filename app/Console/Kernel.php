@@ -7,6 +7,11 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
+
+    protected $commands = [
+        'App\Console\Commands\InsertRepeatingTaskCompletions',
+    ];
+
     /**
      * Define the application's command schedule.
      *
@@ -15,8 +20,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
-        $schedule->command('insert-repeating-tasks-completions')->weeklyOn(7, '23:50');;
+        $schedule->command('InsertRepeatingTaskCompletions')->weeklyOn(7, '23:50');
     }
 
     /**
