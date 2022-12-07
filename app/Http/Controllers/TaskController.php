@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use DateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,7 +23,7 @@ class TaskController extends Controller
      */
     public function index(Request $request) : View
     {
-        if ($request->has('selected_week')) {
+        if ($request->has('selected_week')) {// this comes from the date-picker on index
             $selectedWeek = TaskCompletionController::getCarbonDateFromDateString($request->input('selected_week'));
 
             $startOfWeek = $selectedWeek->startOfWeek()->format('d-m-Y H:i');
@@ -39,7 +40,9 @@ class TaskController extends Controller
         //between the two dates
         $days = TaskController::getAllDaysBetweenTwoDates($startOfWeek ?? "", $endOfWeek ?? "");
 
-        return view('task.list', compact('days', 'dateForWeekSelect'));
+        $tasksWithCompletions = $this->mergeTasksWithTheirCompletions($days);
+
+        return view('task.list', compact('days', 'tasksWithCompletions', 'dateForWeekSelect'));
     }
 
     /**
@@ -250,10 +253,10 @@ class TaskController extends Controller
                 // tasks which are not repeating are date sensitive
                 // these need to match the day AND the date
                 ->orWhere(strtolower($dayOfWeek), ['on'])
-                ->whereDate('date_due', '<=', $dateOfDay)
+                ->where('date_due', '<=', $dateOfDay)
                 ->where('user_fid', [Auth::id()])
 
-                ->orWhereDate('date_due', '=', $dateOfDay)
+                ->orWhere('date_due', '=', $dateOfDay)
                 ->where('user_fid', [Auth::id()])
 
                 ->orderByRaw('HOUR(time_due), MINUTE(time_due), time_due')
@@ -391,6 +394,71 @@ class TaskController extends Controller
         }
 
         return [];
+    }
+
+    /**
+     * As parameter this function takes an array filled with carbon days of a specific week.
+     * It returns the tasks for that specific week along with their completions.
+     * @param array $days
+     * @return array
+     */
+    public function mergeTasksWithTheirCompletions(array $days): array
+    {
+        $daysWithTheirRespectiveTasks = array();
+
+        // looping through each day of the week
+        foreach ($days as $key => $day) {
+
+            // defining carbon properties as variables for quick access
+            $dayOfWeek = $day->dayName;
+            $dateOfDay = $day->isoFormat('DD/MM/YYYY');
+
+            // fetching the tasks for the currently looping day
+            $tasksForThisDay = TaskController::getTasksForDayOfWeek($dayOfWeek, $dateOfDay);
+
+            $tasksFound = count($tasksForThisDay);
+
+            // did we find any tasks?
+            if ($tasksFound > 0) {
+
+                for($i=0;$i<$tasksFound;$i++){
+
+                    $tasksForThisDay[$i]->dateOfDay = $dateOfDay;
+                    $daysWithTheirRespectiveTasks[$day->dayName] = $tasksForThisDay;
+                }
+            }
+        }
+
+        $tasksWithTheirCompletions = array();
+
+        // for each day on which we found tasks
+        foreach ($daysWithTheirRespectiveTasks as $dayName => $tasks) {
+
+            // loop through all the tasks on that day
+            foreach ($tasks as $key => $task) {
+
+                // fetch their completions. a task can have many completions
+                $tasksCompletions = TaskCompletionController::getTasksCompletionsByTaskId($task->id);
+
+                // if there are completions found for this task
+                if (!empty($tasksCompletions)) {
+
+                    // loop through all the completions
+                    foreach ($tasksCompletions as $completionKey => $taskCompletion) {
+
+                        // a task can have multiple completions, but only one completion per task per day
+                        // we find the right one here going by date
+                        if (strtotime($task->dateOfDay) == strtotime($taskCompletion->date)) {
+                            $task->completion = $taskCompletion;
+
+                            // and save them to this final array
+                            $tasksWithTheirCompletions[] = $task;
+                        }
+                    }
+                }
+            }
+        }
+        return $tasksWithTheirCompletions;
     }
 }
 
