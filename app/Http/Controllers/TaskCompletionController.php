@@ -149,11 +149,13 @@ class TaskCompletionController extends Controller
         //the format is dd/mm/yyyy, so the first element contains day, second contains month and third contains year.
         if ($dateDue) {
             $dateDue = explode('/', $dateDue);
-            $day = $dateDue[0];
-            $month = $dateDue[1];
-            $year = $dateDue[2];
+            if(count($dateDue) === 3){ //we need to have exactly 3 array elements, otherwise something is wrong
+                $day = $dateDue[0];
+                $month = $dateDue[1];
+                $year = $dateDue[2];
 
-            return Carbon::createFromDate($year, $month, $day, 'Europe/Vienna');
+                return Carbon::createFromDate($year, $month, $day, 'Europe/Vienna');
+            }
         }
         return Carbon::now();
     }
