@@ -6,6 +6,7 @@ use App\Models\Task;
 use App\Models\TaskCompletion;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -38,9 +39,9 @@ class TaskCompletionController extends Controller
      *
      * @param Request $request
      * @param int $taskFid
-     * @return void
+     * @return RedirectResponse
      */
-    public function store(Request $request, int $taskFid): void
+    public function store(Request $request, int $taskFid): RedirectResponse
     {
 
         //this function can be called either from edit and a task or from creating a brand new one
@@ -64,7 +65,6 @@ class TaskCompletionController extends Controller
                             'task_fid' => $taskFid,
                             'user_fid' => $authenticatedUserId,
                             'date' => $weekDayDate,
-                            'completed' => 'off',
                         ],
                         ['updated_at' => now()]
                     );
@@ -85,6 +85,7 @@ class TaskCompletionController extends Controller
         if ($dueDateOfTask) {
             TaskCompletionController::removeCompletionsFromUnselectedDays($taskDays, $dueDateOfTask, $taskFid);
         }
+        return redirect()->back();
     }
 
     /**

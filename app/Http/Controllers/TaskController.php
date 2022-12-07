@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
-use App\Models\TaskCompletion;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
@@ -11,15 +10,17 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\View\View;
 
 class TaskController extends Controller
 {
     /**
      * Display a listing of the resource.
      * @param Request $request
-     * @return
+     * @return View
      */
-    public function index(Request $request)
+    public function index(Request $request) : View
     {
 
         if (isset($request->selected_week)) {
@@ -37,7 +38,6 @@ class TaskController extends Controller
         //by default, this function returns the current week
         //the function returns an array with all carbon day objects
         //between the two dates
-        //TODO: make it work with date picker
         $days = TaskController::getAllDaysBetweenTwoDates($startOfWeek ?? "", $endOfWeek ?? "");
 
         return view('task.list', compact('days', 'dateForWeekSelect'));
@@ -46,9 +46,9 @@ class TaskController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return void
      */
-    public function create(): \Illuminate\Http\Response
+    public function create(): void
     {
         //
     }
@@ -105,9 +105,9 @@ class TaskController extends Controller
 
         if (isset($insertTaskId)) {
             return redirect()->back()->with('success', 'task created successfully!');
-        } else {
-            return redirect()->back()->with('error', 'something went wrong!');
         }
+
+            return redirect()->back()->with('error', 'something went wrong!');
     }
 
     /**
@@ -139,7 +139,7 @@ class TaskController extends Controller
      * @param Task $task
      * @return RedirectResponse
      */
-    public function edit(Request $request): RedirectResponse
+    public function edit(Request $request) : RedirectResponse
     {
         $request->validate(
             [
@@ -147,6 +147,12 @@ class TaskController extends Controller
                 'datepicker_edit' => 'required_without:repeating',
                 'repeating' => 'required_without:datepicker_edit',
             ]);
+
+        if($request->user_fid > 0){
+           $user_fid = $request->user_fid;
+        } else {
+            $user_fid = Auth::id();
+        }
 
         Task::where('id', $request->id)
             ->update([
@@ -159,7 +165,7 @@ class TaskController extends Controller
                 'friday' => $request->input('friday'),
                 'saturday' => $request->input('saturday'),
                 'sunday' => $request->input('sunday'),
-                'user_fid' => Auth::id(),
+                'user_fid' =>$user_fid,
                 'time_due' => $request->input('timepicker_edit'),
                 'date_due' => $request->input('datepicker_edit'),
                 'updated_at' => now(),
@@ -178,9 +184,9 @@ class TaskController extends Controller
      *
      * @param Request $request
      * @param Task $task
-     * @return \Illuminate\Http\Response
+     * @return void
      */
-    public function update(Request $request, Task $task)
+    public function update(Request $request, Task $task) : void
     {
         //
     }
@@ -222,18 +228,19 @@ class TaskController extends Controller
 
     /**
      * Returns all tasks on the given days.
-     * Given days are an array of Carbon dates
+     * Given days are an array of Carbon dates.
      * If parameter is not set, it returns all tasks.
      * @param string $dayOfWeek
-     * @return array{}
+     * @param string $dateOfDay
+     * @return array
      */
-    public static function getTasksForDayOfWeek(string $dayOfWeek, string $dateOfDay): array
+    public static function getTasksForDayOfWeek(string $dayOfWeek = "", string $dateOfDay = "") : array
     {
-
         $result = array();
 
-        if ($dayOfWeek) {
+        if (strlen($dayOfWeek) > 0) {
             $tasks = DB::table('tasks')
+
                 // tasks which are repeating are not date sensitive
                 // we are fetching all tasks which are repeating on the
                 // specific day of the week
@@ -246,21 +253,23 @@ class TaskController extends Controller
                 ->orWhere(strtolower($dayOfWeek), ['on'])
                 ->whereDate('date_due', '<=', $dateOfDay)
                 ->where('user_fid', [Auth::id()])
-                ->orderBy('time_due', 'ASC')
 
                 ->orWhereDate('date_due', '=', $dateOfDay)
                 ->where('user_fid', [Auth::id()])
+
+                ->orderByRaw('HOUR(time_due), MINUTE(time_due), time_due')
                 ->get()
                 ->toArray();
 
-            if ($tasks) {
+            if (count($tasks) > 0) {
                 $result = $tasks;
             }
+
         } else {
             //if there are no days passed, by default we fetch all tasks
             $tasks = DB::table('tasks')
                 ->where('user_fid', [Auth::id()])
-                ->orderBy('time_due', 'ASC')
+                ->orderByRaw('HOUR(time_due), MINUTE(time_due), time_due')
                 ->get()
                 ->toArray();
             $result = $tasks;
@@ -275,15 +284,20 @@ class TaskController extends Controller
      * @param int $taskId
      * @return array
      */
-    public function getTaskById(int $taskId): array
+    public static function getTaskById(int $taskId): array
     {
-        $task = Task::where('id', $taskId)
-            ->where('user_fid', [Auth::id()])
-            ->firstOrFail()
-            ->toArray();
+        try {
+            $task = Task::where('id', $taskId)
+                ->where('user_fid', [Auth::id()])
+                ->firstOrFail()
+                ->toArray();
 
-        if ($task) {
-            return $task;
+            if ($task) {
+                return $task;
+            }
+        } catch (\Exception $e) {
+            // Log the error and return an empty array
+            Log::error($e->getMessage());
         }
 
         return [];
@@ -369,6 +383,7 @@ class TaskController extends Controller
     {
 
         $tasks = Task::where('user_fid', Auth::id())
+            ->firstOrFail()
             ->get()
             ->toArray();
 
