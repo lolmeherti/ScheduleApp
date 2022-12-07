@@ -22,14 +22,13 @@ class TaskController extends Controller
      */
     public function index(Request $request) : View
     {
-
-        if (isset($request->selected_week)) {
-            $selectedWeek = TaskCompletionController::getCarbonDateFromDateString($request->selected_week);
+        if ($request->has('selected_week')) {
+            $selectedWeek = TaskCompletionController::getCarbonDateFromDateString($request->input('selected_week'));
 
             $startOfWeek = $selectedWeek->startOfWeek()->format('d-m-Y H:i');
             $endOfWeek = $selectedWeek->EndOfWeek()->format('d-m-Y H:i');
 
-            $dateForWeekSelect = $request->selected_week;
+            $dateForWeekSelect = $request->input('selected_week');
         } else {
             $carbonNow = Carbon::now();
             $dateForWeekSelect = $carbonNow->format('d/m/Y');
