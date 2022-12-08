@@ -3,9 +3,9 @@
         position: relative;
         display: flex; /* or inline-flex */
         flex-wrap: wrap;
-        gap: 25px;
-        margin-top: 30px;
-        height: 1200px;
+
+        gap: 1.5em;
+        height: 100em;
         overflow: auto;
     }
 
@@ -32,7 +32,7 @@
 
     {{--timeframe navigation--}}
     <form action="{{route('list')}}" id="custom_week" name="custom_week">
-        <div class="position:relative" style="margin: 8 auto; padding-right:4.5%; float: none; width:25%;">
+        <div class="position:relative" style="margin: 8 auto; padding-right:4.5%; float: none; width:25%; min-width:300px">
             <input class="form-control text-center bg-dark text-white border border-warning rounded" id="selected_week"
                    name="selected_week" value="{{$dateForWeekSelect}}"
                    onclick="showSelectedWeek()"
@@ -50,24 +50,24 @@
             @endphp
 
             {{-- the controller gives us an array of carbon days to render --}}
-            <div class="card" style="width: 30%;">
+            <div class="card" style="width: 30%; min-width:300px;">
                 <div class="card-header text-center text-white bg-dark mb-0.5 align {{$border}}"
                      @if($todayDayName == $day->dayName)
                          class="border border-warning"
                      @endif
-                     style="font-size:20px; padding-bottom:-5%; font-weight:bold; margin-bottom:0">
+                     style="font-size:1.5em; padding-bottom:-5%; font-weight:bold; margin-bottom:0">
                     @if($todayDayName == $day->dayName && $todayDate == $day->format('d/m/Y'))
                         {{'Today'}}
                     @else
                         {{$day->dayName}} <br>
                     @endif
-                    <div style="font-size:15px">
+                    <div style="font-size:0.6em">
                         {{$day->isoFormat('Do MMM Y')}}
                     </div>
                 </div>
 
                 <table class="table table-responsive table-dark table-sm text-center table-hover"
-                       style="margin-bottom:8px; margin-top:0; padding-top:0;">
+                       style="margin-bottom:0.3em; margin-top:0; padding-top:0; max-width:100%">
                     <thead>
                     <tr>
                         <th scope="col">Done</th>
@@ -84,7 +84,7 @@
 
                                     <tr id="task{{$task->completion->id}}">
 
-                                        <td style="padding-top:4px;">
+                                        <td style="padding-top:0.2em;">
                                             <input type="checkbox" class="form-check-input bg-dark border border-white"
                                                    name="complete{{$task->completion->id}}"
                                                    id="complete{{$task->completion->id}}"
@@ -93,13 +93,13 @@
                                                    @endif onclick="completeTask({{ $task->completion->id }})">
                                         </td>
 
-                                        <td @if($task->repeating == "off") style="padding-top:8px;"@endif>
+                                        <td @if($task->repeating == "off") style="padding-top:0.5em;"@endif>
                                             @if($task->repeating == "on")
-                                                <button style="font-size:18px;">&#10227;</button>
+                                                <button style="font-size:1.1em;">&#10227;</button>
                                             @endif  {{$task->time_due}}
                                         </td>
 
-                                        <td style="padding-top:7px;">
+                                        <td style="padding-top:0.5em;">
                                             <label class="special-label " for="exampleCheck1"
                                                    onclick="openEditForm({{$task->id}})">{{$task->description}}</label>
                                         </td>
@@ -107,7 +107,7 @@
                                         <td>
                                             <button type="button" onclick="deleteTask({{$task->completion->id}})"
                                                     class="btn btn-danger btn-sm pull-right"
-                                                    style="color:red" ;
+                                                    style="color:red";
                                                     id="delete{{$task->completion->id}}">Delete
                                             </button>
                                         </td>
@@ -117,7 +117,7 @@
                                 </tbody>
                 </table>
                 <hr>
-                <button type="button" style="margin-top:5px;"
+                <button type="button" style="margin-top:0.5em;"
                         onclick="openCreateForm({{strtolower($day->dayName)}})"
                         class="btn btn-outline-dark btn-sm">New
                 </button>

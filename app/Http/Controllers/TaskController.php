@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use DateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -422,8 +421,10 @@ class TaskController extends Controller
             if ($tasksFound > 0) {
 
                 for($i=0;$i<$tasksFound;$i++){
-
+                    // at this point, we want to add the date to the task object
                     $tasksForThisDay[$i]->dateOfDay = $dateOfDay;
+
+                    // and save it
                     $daysWithTheirRespectiveTasks[$day->dayName] = $tasksForThisDay;
                 }
             }

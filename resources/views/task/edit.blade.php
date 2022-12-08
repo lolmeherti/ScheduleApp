@@ -2,7 +2,8 @@
     /* The popup form - hidden by default */
     .form-popup {
         width: 50%;
-        height: 75%;
+        min-width:300px;
+        height:75%;
         position: absolute;
         top: 10%;
         left: 15%;
@@ -19,19 +20,14 @@
         padding-right: 10px;
     }
 
-    .parag {
-        padding-left: 10px;
-        padding-top: 10px;
-    }
 </style>
 
 <div class="form-popup bg-dark text-white" id="editTaskForm">
-    <form method="post" action="{{ route('edit') }}" autocomplete="off">
+    <form method="post" action="{{ route('edit') }}" autocomplete="off" class="bg-dark">
         @csrf
-
         <input type="hidden" value="" name="id" id="id">
 
-        <div class="form-group text-center" style="padding-top:15px; font-size:18px;">
+        <div class="form-group text-center" style="padding-top:1em; font-size:1.2em;">
             <label for="description">Description of your task:</label>
             <textarea class="form-control" id="description" name="description"
                       rows="3"></textarea>
@@ -96,7 +92,7 @@
 
             <div class="form-group">
                 <label for="timepicker_edit">What time?</label>
-                <select class="form-select text-center" style="width:20%" id="timepicker_edit" name="timepicker_edit">
+                <select class="form-select text-center" style="width:20%; min-width:100px;" id="timepicker_edit" name="timepicker_edit">
                     @for($i=0; $i<24; $i++)
                         <option value="<?php echo $i.":00"; ?>"><?php echo $i . ":00"; ?></option>
                         <option value="<?php echo $i.":30"; ?>"><?php echo $i . ":30"; ?></option>
@@ -118,7 +114,7 @@
                 <br>
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" name="repeating" id="repeating">
-                    <label class="form-check-label" for="repeating"> <button style="font-size:18px;">&#10227;</button> Repeat </label>
+                    <label class="form-check-label" for="repeating"> <button style="font-size:1.2em;">&#10227;</button> Repeat </label>
                 </div>
             </div>
         </div>

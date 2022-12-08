@@ -7,7 +7,7 @@
         width:35%;
         display: none;
         opacity: 0.95;
-
+        min-width:300px;
     }
 
     .form-group {
@@ -20,9 +20,9 @@
 </style>
 
 <div class="form-popup bg-dark text-white" id="createTaskForm">
-    <form id="create_task" name="create_task" method="post" action="{{ route('store') }}" autocomplete="off">
+    <form id="create_task" name="create_task" method="post" action="{{ route('store') }}" autocomplete="off" class="bg-dark">
         @csrf
-        <div class="form-group text-center" style="padding-top:25px; font-size:18px;">
+        <div class="form-group text-center" style="padding-top:1.6em; font-size:1.125em;">
             <label for="description">Description of your task:</label>
             <textarea class="form-control" id="description" name="description" rows="3"></textarea>
         </div>
@@ -86,7 +86,7 @@
 
             <div class="form-group">
                 <label for="timepicker">What time?</label>
-                <select class="form-select text-center" style="width:20%" id="timepicker" name="timepicker">
+                <select class="form-select text-center" style="width:20%;min-width:100px;" id="timepicker" name="timepicker">
                     @for($i=0; $i<24; $i++)
                         <option value="<?php echo $i.":00"; ?>"><?php echo $i . ":00"; ?></option>
                         <option value="<?php echo $i.":30"; ?>"><?php echo $i . ":30"; ?></option>
