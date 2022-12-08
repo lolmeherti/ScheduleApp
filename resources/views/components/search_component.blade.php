@@ -142,8 +142,6 @@
 
             var postData = {"search": query};
 
-            console.log(query);
-
             if(query){
                 document.getElementById("search_results").classList.remove('hide_search_table');
                 document.getElementById("search_results").classList.add('display_search_table');
@@ -159,16 +157,17 @@
                 url: '/list/search/',
                 data: postData,
                 success: function (response) {
+
+                    const table = document.getElementById("search_results");
+
+                    $(table).find('tbody').empty();
+
                     if (response.status == 404) {
                         //TODO: display error message
+
+                        $(table).find('tbody')
+                            .append('<tr><td> No Data </td></tr>')
                     } else {
-
-                        console.log(response);
-
-                        const table = document.getElementById("search_results");
-
-                        $(table).find('tbody').empty();
-
                         response.tasks.forEach(function(item, index, arr){
                             var itemsDate = item.date_due;
                             $(table).find('tbody')
