@@ -95,6 +95,13 @@
 
             <hr>
 
+            <div class="form-group text-center">
+                When is the task due?
+                <input class="form-control text-center" id="datepicker_edit" name="datepicker_edit">
+            </div>
+
+            <hr>
+
             <div class="form-group">
                 <label for="timepicker_edit">What time?</label>
                 <select class="form-select text-center" style="width:20%; min-width:100px;" id="timepicker_edit" name="timepicker_edit">
@@ -103,13 +110,6 @@
                         <option value="<?php echo $i.":30"; ?>"><?php echo $i . ":30"; ?></option>
                     @endfor
                 </select>
-            </div>
-
-            <hr>
-
-            <div class="form-group text-center">
-                    When is the task due?
-                <input class="form-control text-center" id="datepicker_edit" name="datepicker_edit">
             </div>
 
             <hr>
