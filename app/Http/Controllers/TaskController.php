@@ -75,7 +75,7 @@ class TaskController extends Controller
 
         //either we know which day the task is for
         //or the task is repeating
-        if (count($validDaysSelected) > 0 || $request->input('repeating') == "on") {
+        if (count($validDaysSelected) > 0 || $request->input('repeating') == "on" || $request->input('datepicker_create') !== null) {
             $insertTaskId = DB::table('tasks')->insertGetId([
                 'description' => $request->input('description'),
                 'repeating' => $request->input('repeating') ?? "off",
