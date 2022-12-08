@@ -34,6 +34,7 @@ Route::group(['middleware' => 'auth'], function () { //these routes are only ava
     Route::get('/list/create_completions/{id}', [TaskCompletionController::class, 'completeTaskById'])->name('complete');
     Route::post('/list/delete_completion/', [TaskCompletionController::class, 'deleteTaskCompletionTaskById'])->name('delete_completion');
 
+    Route::post('/list/search', [TaskCompletionController::class, 'searchCompletionsByTitle'])->name('search');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

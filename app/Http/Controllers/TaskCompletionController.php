@@ -453,4 +453,31 @@ class TaskCompletionController extends Controller
         }
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public static function searchCompletionsByTitle(Request $request) : JsonResponse
+    {
+        $stringToSearch = $request->input('search');
+
+        $tasks = DB::table('tasks')
+        ->where('title','LIKE', '%'.$stringToSearch.'%')
+        ->where('user_fid','=', Auth::id())
+        ->get()
+        ->toArray();
+
+        if(count($tasks) > 0) {
+            return response()->json([
+                'tasks' => $tasks,
+                'status' => 200
+            ]);
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Tasks not found!',
+            ]);
+        }
+    }
+
 }

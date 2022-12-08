@@ -32,15 +32,19 @@
 
     {{--timeframe navigation--}}
     <form action="{{route('list')}}" id="custom_week" name="custom_week">
-        <div class="position:relative" style="margin: 8 auto; padding-right:4.5%; float: none; width:25%; min-width:300px">
-            <input class="form-control text-center bg-dark text-white border border-warning rounded" id="selected_week"
-                   name="selected_week" value="{{$dateForWeekSelect}}"
-                   onclick="showSelectedWeek()"
-            >
+        <div class="row justify-content-md-center no-gutters" style="margin: 8 auto; float: none; width:50%; min-width:300px; max-height: 35px">
+            <div class="columns-xs"> </div>
+            <div class="col-lg-5">
+                <input class="form-control text-center bg-dark text-white border border-warning rounded" id="selected_week"
+                       name="selected_week" value="{{$dateForWeekSelect}}"
+                       onclick="showSelectedWeek()">
+        </div>
+
+            @include('components/search_component')
         </div>
     </form>
 
-    <div class="container" style="margin: 0 auto; float: none;">
+    <div class="container" id="container" style="margin: 0 auto; float: none;">
 
         @foreach($days as $day)
 
