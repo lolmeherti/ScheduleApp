@@ -146,8 +146,8 @@ class TaskController extends Controller
     {
         $request->validate(
             [
-                'title' => ['required', 'string', 'max:500'],
-                'description' => ['string', 'max:1000'],
+                'title' => ['required', 'string', 'max:500', 'unique:tasks'],
+                'description' => ['string', 'max:1000', 'unique:tasks'],
                 'datepicker_edit' => 'required_without:repeating',
                 'repeating' => 'required_without:datepicker_edit',
             ]);
