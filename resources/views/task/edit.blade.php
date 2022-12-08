@@ -4,7 +4,7 @@
         width: 50%;
         min-width:300px;
         height:75%;
-        position: absolute;
+        position: fixed;
         top: 10%;
         left: 15%;
         display: none;
@@ -26,6 +26,11 @@
     <form method="post" action="{{ route('edit') }}" autocomplete="off" class="bg-dark">
         @csrf
         <input type="hidden" value="" name="id" id="id">
+
+        <div class="form-group text-center" style="padding-top:1.6em; font-size:1.125em;">
+            <label for="title">Title of your task:</label>
+            <input type="text" class="form-control" id="title" name="title">
+        </div>
 
         <div class="form-group text-center" style="padding-top:1em; font-size:1.2em;">
             <label for="description">Description of your task:</label>
@@ -153,6 +158,9 @@
 
                     //setting the task id in a hidden input
                     response.task.id ?  $('#id').val(response.task.id) : '';
+
+                    //load title
+                    $('#title').val(response.task.title);
 
                     //load description
                     $('#description').val(response.task.description);

@@ -8,6 +8,7 @@
         display: none;
         opacity: 0.95;
         min-width:300px;
+        position:fixed;
     }
 
     .form-group {
@@ -23,6 +24,11 @@
     <form id="create_task" name="create_task" method="post" action="{{ route('store') }}" autocomplete="off" class="bg-dark">
         @csrf
         <div class="form-group text-center" style="padding-top:1.6em; font-size:1.125em;">
+            <label for="title">Title of your task:</label>
+            <input type="text" class="form-control" id="title" name="title">
+        </div>
+
+        <div class="form-group text-center" style=font-size:1.125em;">
             <label for="description">Description of your task:</label>
             <textarea class="form-control" id="description" name="description" rows="3"></textarea>
         </div>

@@ -101,7 +101,7 @@
 
                                         <td style="padding-top:0.5em;">
                                             <label class="special-label " for="exampleCheck1"
-                                                   onclick="openEditForm({{$task->id}})">{{$task->description}}</label>
+                                                   onclick="openEditForm({{$task->id}})">{{$task->title}}</label>
                                         </td>
 
                                         <td>

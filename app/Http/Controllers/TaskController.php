@@ -66,7 +66,8 @@ class TaskController extends Controller
         //tasks table section
         $request->validate(
             [
-                'description' => ['required', 'string', 'max:1000', 'unique:tasks'],
+                'title' => ['required', 'string', 'max:500', 'unique:tasks'],
+                'description' => ['string', 'max:1000', 'unique:tasks'],
                 'datepicker_create' => ['required_without:repeating'],
                 'repeating' => ['required_without_all:monday,tuesday,wednesday,thursday,friday,saturday,sunday,datepicker_create, nullable']
             ]);
@@ -77,6 +78,7 @@ class TaskController extends Controller
         //or the task is repeating
         if (count($validDaysSelected) > 0 || $request->input('repeating') == "on" || $request->input('datepicker_create') !== null) {
             $insertTaskId = DB::table('tasks')->insertGetId([
+                'title' => $request->input('title'),
                 'description' => $request->input('description'),
                 'repeating' => $request->input('repeating') ?? "off",
                 'monday' => $request->input('monday') ?? "off",
@@ -144,7 +146,8 @@ class TaskController extends Controller
     {
         $request->validate(
             [
-                'description' => ['required', 'string', 'max:1000'],
+                'title' => ['required', 'string', 'max:500'],
+                'description' => ['string', 'max:1000'],
                 'datepicker_edit' => 'required_without:repeating',
                 'repeating' => 'required_without:datepicker_edit',
             ]);
@@ -157,6 +160,7 @@ class TaskController extends Controller
 
         Task::where('id', $request->id)
             ->update([
+                'title' => $request->input('title'),
                 'description' => $request->input('description'),
                 'repeating' => $request->input('repeating'),
                 'monday' => $request->input('monday'),
