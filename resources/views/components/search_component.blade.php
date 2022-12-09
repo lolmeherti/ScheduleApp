@@ -170,11 +170,14 @@
                     } else {
                         response.tasks.forEach(function(item, index, arr){
                             var itemsDate = item.date_due;
-                            $(table).find('tbody')
-                                .append('<tr id="' + item.id +'">')
-                                .append('<td class="cursor_pointer" onClick="getItemsDate(\'' + itemsDate + '\')">' + item.title + '</td>')
-                                .append('<td>' + item.date_due + '</td>')
-                                .append('</tr>');
+
+                            if(itemsDate){
+                                $(table).find('tbody')
+                                    .append('<tr id="' + item.id +'">')
+                                    .append('<td class="cursor_pointer" onClick="getItemsDate(\'' + itemsDate + '\')">' + item.title + '</td>')
+                                    .append('<td>' + item.date_due + '</td>')
+                                    .append('</tr>');
+                            }
                         })
                     }
                 }
