@@ -16,12 +16,6 @@ After creating an account and logging in, the user is greeted with an index page
 <img src="https://i.ibb.co/CtJJzsF/image-2022-12-09-023614656.png"></p>
 </p>
 
-Clicking new on any day of the week will pop-up a task creation window with the day pre-selected
-
-<p align="center">
-<img src="https://i.ibb.co/jTRRLcf/image-2022-12-09-034717339.png"></p>
-</p>
-
 **Title** and **Description** fields are required.
 
 A **non repeating** task can be created by choosing a **date due** for the task, weekday selection is not necessary in this case.
@@ -29,32 +23,15 @@ Creation of tasks in the past is not allowed, as time travel technology is not y
 
 Example of a **non repeating** task creation
 <p align="center">
-<img src="https://i.ibb.co/7XqqZ27/image-2022-12-09-034849316.png"></p>
+<img src="https://i.ibb.co/sjzT1RQ/opera-p-ZKF5759jy.gif"></p>
 </p>
-
-<p align="center">
-The result
-</p>
-
-<p align="center">
-<img src="https://i.ibb.co/dQnKMhY/image-2022-12-09-025016575.png">
-</p>
-
 
 A **repeating task** is created by selecting weekdays and switching **Repeat** on. Repeating tasks will have the repeating symbol **⟳** on the time column 
 
 Example of a **repeating** task creation
 
 <p align="center">
-<img src="https://i.ibb.co/9hsckgL/image-2022-12-09-035036170.png">
-</p>
-
-<p align="center">
-The result
-</p>
-
-<p align="center">
-<img src="https://i.ibb.co/r0hd6Mm/image-2022-12-09-025555900.png">
+<img src="https://i.ibb.co/NTjsGQD/opera-8b0m5s-AEvx.gif">
 </p>
 
 **Editing a repeating task** and all of its instances is incredibly simple in Task Scheduler.
@@ -72,6 +49,12 @@ When hovering the **magnifying glass icon**, a search input field will be reveal
 Searching for a task and clicking it after it autocompletes will let the user jump to the week where the task took place.
 
 The search feature is only meant for tasks with a set date. Repeating tasks will be occuring every week and will found by navigating with the date-picker widget.
+
+Example of using the search feature to find a future task we created.
+
+<p align="center">
+<img src="https://i.ibb.co/K7FrQVn/opera-iic-UYZqup-H.gif">
+</p>
 
 ### Date-picker widget
 
