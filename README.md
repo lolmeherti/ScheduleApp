@@ -1,3 +1,91 @@
+<p align="center">
+<img src="https://i.ibb.co/W0PShQm/Untitled.png"></p>
+</p>
+
+## About Task Scheduler
+
+Task Scheduler's prupose is to allow users to create repeating tasks easily and to allow editing of all repeating tasks in a single place.
+
+Task Scheduler is free for everyone to use.
+
+## Walkthrough
+
+After creating an account and logging in, the user is greeted with an index page containing a weekly calendar which will be listing the weekdays of current week.
+
+<p align="center">
+<img src="https://i.ibb.co/CtJJzsF/image-2022-12-09-023614656.png"></p>
+</p>
+
+Clicking new on any day of the week will pop-up a task creation window with the day pre-selected
+
+<p align="center">
+<img src="https://i.ibb.co/CWGTR91/image-2022-12-09-023920763.png"></p>
+</p>
+
+**Title** and **Description** fields are required.
+
+A **non repeating** task can be created by choosing a **date due** for the task, weekday selection is not necessary in this case.
+Creation of tasks in the past is not allowed, as time travel technology is not yet accessible to the general public in 2022 /s.
+
+Example of a **non repeating** task creation
+<p align="center">
+<img src="https://i.ibb.co/5FszgM1/image.png"></p>
+</p>
+
+<p align="center">
+The result
+</p>
+
+<p align="center">
+<img src="https://i.ibb.co/dQnKMhY/image-2022-12-09-025016575.png">
+</p>
+
+
+A **repeating task** is created by selecting weekdays and switching **Repeat** on. Repeating tasks will have the repeating symbol **⟳** on the time column 
+
+Example of a **repeating** task creation
+
+<p align="center">
+<img src="https://i.ibb.co/SvR9Cxv/image-2022-12-09-025349477.png">
+</p>
+
+<p align="center">
+The result
+</p>
+
+<p align="center">
+<img src="https://i.ibb.co/r0hd6Mm/image-2022-12-09-025555900.png">
+</p>
+
+**Editing a repeating task** and all of its instances is incredibly simple in Task Scheduler.
+
+Simply clicking any of the tasks on any which day will bring up the edit window. Changing anything in one repeating tasks edit window will change all instances of itself without any hassle.
+
+The edit form will be the same as the creation form, therefor no further images will be shared.
+
+Converting non-repeating tasks to repeating tasks and vice versa is possible and easy.
+
+### The Search feature
+
+When hovering the **magnifying glass icon**, a search input field will be revealed
+
+Searching for a task and clicking it after it autocompletes will let the user jump to the week where the task took place.
+
+The search feature is only meant for tasks with a set date. Repeating tasks will be occuring every week and will found by navigating with the date-picker widget.
+
+### Date-picker widget
+
+**The date-picker widget** allows users to select a specific date. The week during the clicked date will be rendered as the weekly calendar view.
+
+<p align="center">
+<img src="https://i.ibb.co/mhrzJf5/image-2022-12-09-031804056.png">
+</p>
+
+### Disclaimer
+Email notifications have not been set up, as there are no current plans for hosting this service. The service is self hosted and the mailing has to be set-up post download if the feature is desired.
+
+## Task Scheduler is built with Laravel!
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
@@ -7,60 +95,4 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+I am forever grateful for everyone working hard for developers to be able to freely use amazing tools such as Laravel. It is the reason why I'm motivated to contribute to the open source community.
