@@ -19,7 +19,7 @@ After creating an account and logging in, the user is greeted with an index page
 Clicking new on any day of the week will pop-up a task creation window with the day pre-selected
 
 <p align="center">
-<img src="https://i.ibb.co/CWGTR91/image-2022-12-09-023920763.png"></p>
+<img src="https://i.ibb.co/jTRRLcf/image-2022-12-09-034717339.png"></p>
 </p>
 
 **Title** and **Description** fields are required.
@@ -29,7 +29,7 @@ Creation of tasks in the past is not allowed, as time travel technology is not y
 
 Example of a **non repeating** task creation
 <p align="center">
-<img src="https://i.ibb.co/5FszgM1/image.png"></p>
+<img src="https://i.ibb.co/7XqqZ27/image-2022-12-09-034849316.png"></p>
 </p>
 
 <p align="center">
@@ -46,7 +46,7 @@ A **repeating task** is created by selecting weekdays and switching **Repeat** o
 Example of a **repeating** task creation
 
 <p align="center">
-<img src="https://i.ibb.co/SvR9Cxv/image-2022-12-09-025349477.png">
+<img src="https://i.ibb.co/9hsckgL/image-2022-12-09-035036170.png">
 </p>
 
 <p align="center">
