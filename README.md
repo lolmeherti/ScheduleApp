@@ -65,13 +65,15 @@ The edit form will be the same as the creation form, therefor no further images 
 
 Converting non-repeating tasks to repeating tasks and vice versa is possible and easy.
 
-**The search feature**
+### The Search feature
 
 When hovering the **magnifying glass icon**, a search input field will be revealed
 
 Searching for a task and clicking it after it autocompletes will let the user jump to the week where the task took place.
 
 The search feature is only meant for tasks with a set date. Repeating tasks will be occuring every week and will found by navigating with the date-picker widget.
+
+### Date-picker widget
 
 **The date-picker widget** allows users to select a specific date. The week during the clicked date will be rendered as the weekly calendar view.
 
