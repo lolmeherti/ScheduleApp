@@ -73,6 +73,12 @@ Searching for a task and clicking it after it autocompletes will let the user ju
 
 The search feature is only meant for tasks with a set date. Repeating tasks will be occuring every week and will found by navigating with the date-picker widget.
 
+**The date-picker widget** allows users to select a specific date. The week during the clicked date will be rendered as the weekly calendar view.
+
+<p align="center">
+<img src="https://i.ibb.co/mhrzJf5/image-2022-12-09-031804056.png">
+</p>
+
 ### Disclaimer
 Email notifications have not been set up, as there are no current plans for hosting this service. The service is self hosted and the mailing has to be set-up post download if the feature is desired.
 
