@@ -20,20 +20,22 @@
 
 </style>
 
-<div class="form-popup bg-dark text-white" id="createTaskForm">
-    <form id="create_task" name="create_task" method="post" action="{{ route('store') }}" autocomplete="off" class="bg-dark">
+<div class="form-popup bg-dark border border-warning text-white" id="createTaskForm">
+    <form id="create_task" name="create_task" method="post" action="{{ route('store') }}" autocomplete="off" class="bg-dark ">
         @csrf
         <div class="form-group text-center" style="padding-top:1.6em; font-size:1.125em;">
             <label for="title">Title of your task:</label>
             <input type="text" class="form-control" id="title" name="title">
         </div>
 
+        <hr class="bg-warning">
+
         <div class="form-group text-center" style=font-size:1.125em;">
             <label for="description">Description of your task:</label>
             <textarea class="form-control" id="description" name="description" rows="3"></textarea>
         </div>
 
-        <hr>
+        <hr class="bg-warning">
 
         <div class="form-group">
            For which day(s)?
@@ -42,60 +44,60 @@
         <div class="form-group">
 
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" name="monday" id="monday">
+                <input type="checkbox" class="form-check-input bg-dark border border-light" name="monday" id="monday">
                 <label class="form-check-label" for="monday">Monday</label>
             </div>
 
-            <hr>
+            <hr class="bg-warning">
 
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" name="tuesday" id="tuesday">
+                <input type="checkbox" class="form-check-input bg-dark border border-light" name="tuesday" id="tuesday">
                 <label class="form-check-label" for="tuesday">Tuesday</label>
             </div>
 
-            <hr>
+            <hr class="bg-warning">
 
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" name="wednesday" id="wednesday">
+                <input type="checkbox" class="form-check-input bg-dark border border-light" name="wednesday" id="wednesday">
                 <label class="form-check-label" for="wednesday">Wednesday</label>
             </div>
 
-            <hr>
+            <hr class="bg-warning">
 
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" name="thursday" id="thursday">
+                <input type="checkbox" class="form-check-input bg-dark border border-light" name="thursday" id="thursday">
                 <label class="form-check-label" for="thursday">Thursday</label>
             </div>
 
-            <hr>
+            <hr class="bg-warning">
 
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" name="friday" id="friday">
+                <input type="checkbox" class="form-check-input bg-dark border border-light" name="friday" id="friday">
                 <label class="form-check-label" for="friday">Friday</label>
             </div>
 
-            <hr>
+            <hr class="bg-warning">
 
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" name="saturday" id="saturday">
+                <input type="checkbox" class="form-check-input bg-dark border border-light" name="saturday" id="saturday">
                 <label class="form-check-label" for="saturday">Saturday</label>
             </div>
 
-            <hr>
+            <hr class="bg-warning">
 
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" name="sunday" id="sunday">
+                <input type="checkbox" class="form-check-input bg-dark border border-light" name="sunday" id="sunday">
                 <label class="form-check-label" for="sunday">Sunday</label>
             </div>
 
-            <hr>
+            <hr class="bg-warning">
 
             <div class="form-group text-center">
                 When is the task due?
                 <input class="form-control text-center" id="datepicker_create" name="datepicker_create">
             </div>
 
-            <hr>
+            <hr class="bg-warning">
 
             <div class="form-group">
                 <label for="timepicker">What time?</label>
@@ -107,7 +109,7 @@
                 </select>
             </div>
 
-            <hr>
+            <hr class="bg-warning">
 
             <div class="form-group">
                   Repeat your task on the selected day(s)?
@@ -120,7 +122,7 @@
             </div>
         </div>
 
-        <hr>
+        <hr class="bg-warning">
 
         <div class=" text-center align-self-end form-group">
             <button type="submit" class="btn btn-primary">Save</button>
