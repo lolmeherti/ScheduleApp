@@ -111,7 +111,7 @@
     </div>
 
     <div id="search_results" class="row hide_search_table">
-        <table class="table table-responsive table-dark table-sm text-center table-hover">
+        <table class="table table-responsive table-dark table-sm text-center table-hover border border-warning">
             <thead>
             <tr>
                 <th scope="col">Title</th>
@@ -173,7 +173,7 @@
 
                             if(itemsDate){
                                 $(table).find('tbody')
-                                    .append('<tr id="' + item.id +'">')
+                                    .append('<tr class="border border-warning" id="' + item.id +'">')
                                     .append('<td class="cursor_pointer" onClick="getItemsDate(\'' + itemsDate + '\')">' + item.title + '</td>')
                                     .append('<td>' + item.date_due + '</td>')
                                     .append('</tr>');
