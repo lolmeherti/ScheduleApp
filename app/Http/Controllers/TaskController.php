@@ -402,12 +402,12 @@ class TaskController extends Controller
     /**
      * As parameter this function takes an array filled with carbon days of a specific week.
      * It returns the tasks for that specific week along with their completions.
-     * @param array $days
+     * @param array $days //contains exactly 7 carbon objects. one for each day of the week starting from monday to sunday
      * @return array
      */
     public function mergeTasksWithTheirCompletions(array $days): array
     {
-        $daysWithTheirRespectiveTasks = array();
+        $daysWithTasks = array();
 
         // looping through each day of the week
         foreach ($days as $key => $day) {
@@ -419,25 +419,24 @@ class TaskController extends Controller
             // fetching the tasks for the currently looping day
             $tasksForThisDay = TaskController::getTasksForDayOfWeek($dayOfWeek, $dateOfDay);
 
-            $tasksFound = count($tasksForThisDay);
-
             // did we find any tasks?
-            if ($tasksFound > 0) {
+            if (count($tasksForThisDay) > 0) {
+                foreach ($tasksForThisDay as $task) {
 
-                for($i=0;$i<$tasksFound;$i++){
-                    // at this point, we want to add the date to the task object
-                    $tasksForThisDay[$i]->dateOfDay = $dateOfDay;
+                    // we are assigning this attribute to each task, because it will be used later as a comparison against $dateOfDay
+                    // both are formatted like DD/MM/YYYY and it must stay this way because this is the database date format
+                    $task->dateOfDay = $dateOfDay;
 
                     // and save it
-                    $daysWithTheirRespectiveTasks[$day->dayName] = $tasksForThisDay;
+                    $daysWithTasks[$day->dayName] = $tasksForThisDay;
                 }
             }
         }
 
-        $tasksWithTheirCompletions = array();
+        $tasksWithCompletions = array();
 
         // for each day on which we found tasks
-        foreach ($daysWithTheirRespectiveTasks as $dayName => $tasks) {
+        foreach ($daysWithTasks as $dayName => $tasks) {
 
             // loop through all the tasks on that day
             foreach ($tasks as $key => $task) {
@@ -457,13 +456,13 @@ class TaskController extends Controller
                             $task->completion = $taskCompletion;
 
                             // and save them to this final array
-                            $tasksWithTheirCompletions[] = $task;
+                            $tasksWithCompletions[] = $task;
                         }
                     }
                 }
             }
         }
-        return $tasksWithTheirCompletions;
+        return $tasksWithCompletions;
     }
 }
 
