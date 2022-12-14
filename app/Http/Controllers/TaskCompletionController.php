@@ -15,26 +15,6 @@ use Illuminate\Support\Facades\DB;
 class TaskCompletionController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
@@ -87,52 +67,6 @@ class TaskCompletionController extends Controller
         }
         return redirect()->back();
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param \App\Models\TaskCompletion $taskCompletion
-     * @return Response
-     */
-    public function show(TaskCompletion $taskCompletion)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param \App\Models\TaskCompletion $taskCompletion
-     * @return Response
-     */
-    public function edit(TaskCompletion $taskCompletion)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\TaskCompletion $taskCompletion
-     * @return Response
-     */
-    public function update(Request $request, TaskCompletion $taskCompletion)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param \App\Models\TaskCompletion $taskCompletion
-     * @return Response
-     */
-    public function destroy(TaskCompletion $taskCompletion)
-    {
-        //
-    }
-
 
     /**
      * This param refers to date_due column in the database

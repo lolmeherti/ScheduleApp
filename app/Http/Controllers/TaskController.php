@@ -45,16 +45,6 @@ class TaskController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return void
-     */
-    public function create(): void
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
@@ -182,18 +172,6 @@ class TaskController extends Controller
         //task completion table section
 
         return redirect()->back()->with('success', 'task created successfully!');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param Task $task
-     * @return void
-     */
-    public function update(Request $request, Task $task) : void
-    {
-        //
     }
 
     /**
@@ -378,25 +356,6 @@ class TaskController extends Controller
                 [
                     'updated_at' => now()
                 ]);
-    }
-
-    /**
-     * @param int
-     * @return array
-     */
-    public static function getAllTasksForLoggedInUser() : array
-    {
-
-        $tasks = Task::where('user_fid', Auth::id())
-            ->firstOrFail()
-            ->get()
-            ->toArray();
-
-        if ($tasks) {
-            return $tasks;
-        }
-
-        return [];
     }
 
     /**
