@@ -23,7 +23,7 @@ Creation of tasks in the past is not allowed, as time travel technology is not y
 
 Example of a **non repeating** task creation
 <p align="center">
-<img src="https://i.ibb.co/sjzT1RQ/opera-p-ZKF5759jy.gif"></p>
+<img src="resources/gifs/non_repeating_task.gif"></p>
 </p>
 
 A **repeating task** is created by selecting weekdays and switching **Repeat** on. Repeating tasks will have the repeating symbol **⟳** on the time column 
@@ -31,7 +31,7 @@ A **repeating task** is created by selecting weekdays and switching **Repeat** o
 Example of a **repeating** task creation
 
 <p align="center">
-<img src="https://i.ibb.co/NTjsGQD/opera-8b0m5s-AEvx.gif">
+<img src="resources/gifs/repeating_task.gif.gif">
 </p>
 
 **Editing a repeating task** and all of its instances is incredibly simple in Task Scheduler.
