@@ -31,7 +31,7 @@ A **repeating task** is created by selecting weekdays and switching **Repeat** o
 Example of a **repeating** task creation
 
 <p align="center">
-<img src="resources/gifs/repeating_task.gif.gif">
+<img src="resources/gifs/repeating_task.gif">
 </p>
 
 **Editing a repeating task** and all of its instances is incredibly simple in Task Scheduler.
@@ -53,7 +53,7 @@ The search feature is only meant for tasks with a set date. Repeating tasks will
 Example of using the search feature to find a future task we created.
 
 <p align="center">
-<img src="https://i.ibb.co/K7FrQVn/opera-iic-UYZqup-H.gif">
+<img src="resources/gifs/future_task.gif">
 </p>
 
 ### Date-picker widget
