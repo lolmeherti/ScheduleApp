@@ -1,0 +1,32 @@
+version: '3.1'
+
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: mysql_container_scheduleApp
+    environment:
+      MYSQL_ROOT_PASSWORD: * # Use a secure password
+      MYSQL_DATABASE: * # Database to be created automatically
+      MYSQL_USER: * # Admin username
+      MYSQL_PASSWORD: * # Admin password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init:/docker-entrypoint-initdb.d # Initialization scripts
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_scheduleApp
+    environment:
+      PMA_HOST: * # Use the service name of MySQL as the host
+      PMA_PORT: *
+      PMA_USER: * # Optional: For auto-login in phpMyAdmin
+      PMA_PASSWORD: * # Optional: For auto-login in phpMyAdmin
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:

@@ -21,7 +21,7 @@
 </style>
 
 <div class="form-popup bg-dark border border-warning text-white" id="createTaskForm">
-    <form id="create_task" name="create_task" method="post" action="{{ route('store') }}" autocomplete="off" class="bg-dark ">
+    <form id="create_task" name="create_task" method="post" action="{{ route('list.store') }}" autocomplete="off" class="bg-dark ">
         @csrf
         <div class="form-group text-center" style="padding-top:1.6em; font-size:1.125em;">
             <label for="title">Title of your task:</label>
