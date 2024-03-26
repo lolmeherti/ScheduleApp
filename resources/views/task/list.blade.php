@@ -31,7 +31,7 @@
     @endphp
 
     {{--timeframe navigation--}}
-    <form action="{{route('list')}}" id="custom_week" name="custom_week">
+    <form action="{{route('list.index')}}" id="custom_week" name="custom_week">
         <div class="row justify-content-md-center no-gutters" style="margin: 8 auto; float: none; width:50%; min-width:300px; max-height: 35px">
             <div class="columns-xs"> </div>
             <div class="col-lg-5">
@@ -104,9 +104,10 @@
                                         </td>
 
                                         <td style="padding-top:0.5em;">
-                                            <label class="special-label " for="exampleCheck1"
+                                            <label class="special-label" for="exampleCheck1"
                                                    onclick="openEditForm({{$task->id}})">{{$task->title}}</label>
                                         </td>
+
 
                                         <td>
                                             <button type="button" onclick="deleteTask({{$task->completion->id}})"
@@ -119,6 +120,7 @@
                                 @endif
                                 @endforeach
                                 </tbody>
+
                 </table>
                 <hr>
                 <button type="button" style="margin-top:0.5em;"

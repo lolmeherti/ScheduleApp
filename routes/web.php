@@ -1,8 +1,10 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TaskCompletionController;
-use App\Http\Controllers\TaskController;
+use App\Http\Controllers\{
+    ProfileController,
+    TaskCompletionController,
+    TaskController
+};
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,20 +26,33 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::group(['middleware' => 'auth'], function () { //these routes are only available to authenticated users!
+//Routes below only available to those already authenticated
+Route::middleware(['auth'])->group(function () {
+    Route::resource('list', TaskController::class)->only([
+        'index', 'store', 'show'
+    ]);
+    Route::post('/list/edit', [TaskController::class, 'edit'])->name('list.edit');
 
-    Route::get('/list', [TaskController::class, 'index'])->name('list');
-    Route::post('/list', [TaskController::class, 'store'])->name('store');
-    Route::post('/list/edit', [TaskController::class, 'edit'])->name('edit');
-    Route::get('/list/show/{id}', [TaskController::class, 'show'])->name('show');
+    Route::prefix('list')->group(function () {
+        Route::get(
+            'create_completions/{id}',
+            [TaskCompletionController::class, 'completeTaskById'])->name('complete')
+        ;
+        Route::post(
+            'delete_completion',
+            [TaskCompletionController::class, 'deleteTaskCompletionTaskById'])->name('delete_completion')
+        ;
+        Route::post(
+            'search',
+            [TaskCompletionController::class, 'searchCompletionsByTitle'])->name('search')
+        ;
+    });
 
-    Route::get('/list/create_completions/{id}', [TaskCompletionController::class, 'completeTaskById'])->name('complete');
-    Route::post('/list/delete_completion/', [TaskCompletionController::class, 'deleteTaskCompletionTaskById'])->name('delete_completion');
-
-    Route::post('/list/search', [TaskCompletionController::class, 'searchCompletionsByTitle'])->name('search');
-
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
 });
+
 require __DIR__ . '/auth.php';

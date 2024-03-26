@@ -2,20 +2,28 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
-use Illuminate\Http\Request;
+use App\{
+    Http\Controllers\Controller,
+    Providers\RouteServiceProvider,
+    Utils\Helper
+};
+use Illuminate\{
+    Http\RedirectResponse,
+    Http\Request
+};
 
 class EmailVerificationNotificationController extends Controller
 {
     /**
      * Send a new email verification notification.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @param  Request          $request
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
+        Helper::validateUserDetails($request);
+
         if ($request->user()->hasVerifiedEmail()) {
             return redirect()->intended(RouteServiceProvider::HOME);
         }
