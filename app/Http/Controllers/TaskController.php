@@ -3,17 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
-use App\Models\TaskCompletion;
-use Carbon\Carbon;
-use Carbon\CarbonPeriod;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\View\View;
-
+use Carbon\{
+    Carbon,
+    CarbonPeriod
+};
+use Illuminate\{
+    Http\JsonResponse,
+    Http\RedirectResponse,
+    Http\Request,
+    Support\Facades\Auth,
+    Support\Facades\DB,
+    Support\Facades\Log,
+    View\View
+};
 class TaskController extends Controller
 {
     /**
@@ -370,25 +372,6 @@ class TaskController extends Controller
 
             // loop through all the tasks on that day
             foreach ($tasks as $task) {
-//                if($task->repeating == "on") {
-//                    $newDate = TaskCompletionController::getCarbonDateFromDateString($task->dateOfDay);
-//                    $oldDate = isset($task->date_due) ?
-//                        TaskCompletionController::getCarbonDateFromDateString($task->dateOfDay):
-//                        TaskCompletionController::getCarbonDateFromDateString("");
-//
-//                    if($newDate->timestamp > $oldDate->timestamp) {
-//                        TaskCompletion::firstOrCreate(
-//                            ['date' => $task->dateOfDay, "task_fid" => $task->id, "user_fid" => Auth::id()], // Search criteria
-//                            [
-//                                'task_fid'  => $task->id,
-//                                'user_fid'  => Auth::id(),
-//                                'date'      => $task->dateOfDay,
-//                                'completed' => 'off',
-//                            ]
-//                        );
-//                    }
-//                }
-
                 // fetch their completions. a task can have many completions
                 $tasksCompletions = TaskCompletionController::getTasksCompletionsByTaskId(
                     $task->id,$task->date_due ?? $task->dateOfDay);
