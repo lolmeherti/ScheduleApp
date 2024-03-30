@@ -87,7 +87,7 @@ class TaskCompletionController extends Controller
      *
      * Inserts task completion based off task_fid, user_fid and date
      */
-    private function createTaskCompletion(int $taskFid, int $userFid, string $date, array $taskDays = []): void
+    private static function createTaskCompletion(int $taskFid, int $userFid, string $date, array $taskDays = []): void
     {
         TaskCompletion::updateOrCreate(
             [
@@ -100,7 +100,7 @@ class TaskCompletionController extends Controller
         );
 
         if(!empty($taskDays)) {
-            $this->removeCompletionsFromUnselectedDays($taskDays, $date, $taskFid);
+            self::removeCompletionsFromUnselectedDays($taskDays, $date, $taskFid);
         }
     }
 
@@ -225,7 +225,7 @@ class TaskCompletionController extends Controller
      * @param  Request                $request
      * @return array|RedirectResponse
      */
-    private function getTaskDays(Request $request): array|RedirectResponse
+    private static function getTaskDays(Request $request): array|RedirectResponse
     {
         //this function can be called either from edit and a task or from creating a brand new one
         //they have a different name in the forms. we check which one it is and update or create with the appropriate one
@@ -244,7 +244,7 @@ class TaskCompletionController extends Controller
                 continue;
             }
 
-            $date = $this->formatWeekDay($week, $index, $day);
+            $date = self::formatWeekDay($week, $index, $day);
 
             strtotime($date) < strtotime($dueDateOfTask) || $taskDays[$day] = $date;
         }
@@ -258,7 +258,7 @@ class TaskCompletionController extends Controller
      * @param  string                  $day            Refers to the day being formatted
      * @return string|RedirectResponse                 Returns formatted day of the week
      */
-    private function formatWeekDay(Carbon $week, int $Increment, string $day): string|RedirectResponse
+    private static function formatWeekDay(Carbon $week, int $Increment, string $day): string|RedirectResponse
     {
         if($Increment < 0 || !$day) {
             return redirect()->back()->with("error", "Issue formatting weekday!");
@@ -278,7 +278,7 @@ class TaskCompletionController extends Controller
      * @param  int                   $taskFid
      * @return void
      */
-    private function removeCompletionsFromUnselectedDays(
+    private static function removeCompletionsFromUnselectedDays(
         array $selectedDays,
         string $dueDate,
         int $taskFid
@@ -290,7 +290,7 @@ class TaskCompletionController extends Controller
         }
 
         //we are getting back the week during which the task is set
-        $weekdaysInWeekOfTask = $this->getEntireWeekFromCarbonDateString($dueDate);
+        $weekdaysInWeekOfTask = self::getEntireWeekFromCarbonDateString($dueDate);
 
         //foreach weekday in the week of task
         foreach ($weekdaysInWeekOfTask as $day) {
@@ -319,7 +319,7 @@ class TaskCompletionController extends Controller
      * @param  string $dateString //format of this string is dd/mm/yyyy
      * @return array              of CarbonPeriods
      */
-    private function getEntireWeekFromCarbonDateString(string $dateString): array
+    private static function getEntireWeekFromCarbonDateString(string $dateString): array
     {
         $carbonDate  = TaskCompletionController::getCarbonDateFromDateString($dateString);
         $startOfWeek = $carbonDate->startOfWeek()->format('d-m-Y H:i');;

@@ -4,8 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\{
     Http\Controllers\Controller,
-    Providers\RouteServiceProvider,
-    Utils\Helper
+    Providers\RouteServiceProvider
 };
 use Illuminate\{
     Http\RedirectResponse,
@@ -23,8 +22,6 @@ class EmailVerificationPromptController extends Controller
      */
     public function __invoke(Request $request): RedirectResponse|View
     {
-        Helper::validateUserDetails($request);
-
         return $request->user()->hasVerifiedEmail()
                     ? redirect()->intended(RouteServiceProvider::HOME)
                     : view('auth.verify-email');

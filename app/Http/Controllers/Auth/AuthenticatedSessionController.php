@@ -5,8 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\{
     Http\Controllers\Controller,
     Http\Requests\Auth\LoginRequest,
-    Providers\RouteServiceProvider,
-    Utils\Helper
+    Providers\RouteServiceProvider
 };
 use Illuminate\{
     Http\RedirectResponse,
@@ -37,8 +36,6 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        Helper::validateUserDetails($request);
-
         $request->authenticate();
 
         $request->session()->regenerate();

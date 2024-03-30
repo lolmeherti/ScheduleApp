@@ -51,8 +51,8 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  Request          $request
-     * @return RedirectResponse
+     * @param  Request               $request
+     * @return RedirectResponse|null
      */
     public function store(Request $request): RedirectResponse|null
     {
@@ -155,23 +155,26 @@ class TaskController extends Controller
 
         $user_fid = $request->user_fid > 0 ? $request->user_fid : Auth::id();
 
+        $days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+
+        foreach ($days as $day) {
+            $updateDates[$day] = $request->input($day);
+        }
+
         Task::where('id', $request->id)
-            ->update([
+            ->update(array_merge(
+                [
                 'title'       => $request->input('title'),
                 'description' => $request->input('description'),
                 'repeating'   => $request->input('repeating'),
-                'monday'      => $request->input('monday'),
-                'tuesday'     => $request->input('tuesday'),
-                'wednesday'   => $request->input('wednesday'),
-                'thursday'    => $request->input('thursday'),
-                'friday'      => $request->input('friday'),
-                'saturday'    => $request->input('saturday'),
-                'sunday'      => $request->input('sunday'),
                 'user_fid'    => $user_fid,
                 'time_due'    => $request->input('timepicker_edit'),
                 'date_due'    => $request->input('datepicker_edit'),
-                'updated_at'  => now(),
-            ]);
+                'updated_at'  => now()
+                ],
+                $updateDates
+                )
+            );
 
         //task completion table section
         (new TaskCompletionController)->store($request, $request->id);
@@ -202,7 +205,7 @@ class TaskController extends Controller
      * @param  string  $endDate
      * @return array{}
      */
-    private function getAllDaysBetweenTwoDates(string $startDate = "", string $endDate = ""): array
+    private static function getAllDaysBetweenTwoDates(string $startDate = "", string $endDate = ""): array
     {
         $now = Carbon::now();
 
@@ -292,7 +295,7 @@ class TaskController extends Controller
      * @param  string $chosenDate
      * @return string
      */
-    private function returnCorrectWeekdayIfNoWeekDaysSelected(string $chosenDate): string
+    private static function returnCorrectWeekdayIfNoWeekDaysSelected(string $chosenDate): string
     {
         if (!$chosenDate) {
             return redirect()->back()->with("Error: ", "Neither days or date selected! Cannot repeat/set task");
@@ -334,7 +337,7 @@ class TaskController extends Controller
      * @param  array                  $days Contains exactly 7 carbon objects. One for each day of the week from Mon-Sun
      * @return array|RedirectResponse
      */
-    private function mergeTasksWithTheirCompletions(array $days): array|RedirectResponse
+    private static function mergeTasksWithTheirCompletions(array $days): array|RedirectResponse
     {
         if(empty($days)) {
             return redirect()->back()->with("Error: ", "Carbon object array for week not supplied/is empty");
@@ -348,7 +351,7 @@ class TaskController extends Controller
             $dateOfDay = $day->isoFormat('DD/MM/YYYY');
 
             // fetching the tasks for the currently looping day
-            $tasksForThisDay = TaskController::getTasksForDayOfWeek($dayOfWeek, $dateOfDay);
+            $tasksForThisDay = (new TaskController)->getTasksForDayOfWeek($dayOfWeek, $dateOfDay);
 
             // did we find any tasks?
             if (!empty($tasksForThisDay)) {
