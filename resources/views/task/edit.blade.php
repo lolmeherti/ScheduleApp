@@ -23,8 +23,8 @@
 </style>
 
 <div class="form-popup bg-dark border border-warning text-white" id="editTaskForm">
-    <form method="post" action="{{ route('edit') }}" autocomplete="off" class="bg-dark border border-warning">
-        @csrf
+    <form method="post" action="{{ route('list.edit') }}" autocomplete="off" class="bg-dark border border-warning">
+    @csrf
         <input type="hidden" value="" name="id" id="id">
 
         <div class="form-group text-center" style="padding-top:1.6em; font-size:1.125em;">
@@ -117,7 +117,7 @@
             <hr class="bg-warning">
 
             <div class="form-group">
-                    Repeat your task on the selected day(s)?
+                    Repeat your task on the selected day(ss)?
                 <br>
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" name="repeating" id="repeating">
@@ -168,13 +168,12 @@
                     $('#description').val(response.task.description);
 
                     //days checkboxes
-                    response.task.monday==='on' ?  $( '#monday' ).prop( "checked", true ) : $('#monday').prop( 'checked', false );
-                    response.task.tuesday==='on' ?  $( '#tuesday' ).prop( 'checked', true ) : $('#tuesday').prop( 'checked', false );
-                    response.task.wednesday==='on' ?  $( '#wednesday' ).prop( 'checked', true ) : $('#wednesday').prop( 'checked', false );
-                    response.task.thursday==='on' ?  $( '#thursday' ).prop( 'checked', true ) : $('#thursday').prop( 'checked', false );
-                    response.task.friday==='on' ?  $( '#friday' ).prop( 'checked', true ) : $('#friday').prop( 'checked', false );
-                    response.task.saturday==='on' ?  $( '#saturday' ).prop( 'checked', true ) : $('#saturday').prop( 'checked', false );
-                    response.task.sunday==='on' ?  $( '#sunday' ).prop( 'checked', true ) : $('#sunday').prop( 'checked', false );
+                    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+                    days.forEach(day => {
+                        response.task[day] === 'on' ? $('#' + day).prop("checked", true) : $('#' + day).prop('checked', false);
+                    });
+
 
                     //repeating checkbox
                     response.task.repeating==='on' ?  $( '#repeating' ).prop( 'checked', true ) : $('#repeating').prop( 'checked', false );

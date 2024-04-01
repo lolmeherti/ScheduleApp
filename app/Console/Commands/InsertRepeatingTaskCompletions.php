@@ -28,7 +28,7 @@ class InsertRepeatingTaskCompletions extends Command
      */
     public function handle()
     {
-        TaskCompletionController::prepareRepeatingTasksForNextWeek();
+        (new TaskCompletionController())->prepareRepeatingTasksForNextWeek();
 
         return Command::SUCCESS;
     }
