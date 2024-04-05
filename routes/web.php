@@ -28,10 +28,10 @@ Route::get('/dashboard', function () {
 
 //Routes below only available to those already authenticated
 Route::middleware(['auth'])->group(function () {
-    Route::resource('list', TaskController::class)->only([
-        'index', 'store', 'show'
-    ]);
+    Route::resource('list', TaskController::class)->only(['index', 'store']);
+
     Route::post('/list/edit', [TaskController::class, 'edit'])->name('list.edit');
+    Route::get('/list/show/{id}', [TaskController::class, 'show']);
 
     Route::prefix('list')->group(function () {
         Route::get(

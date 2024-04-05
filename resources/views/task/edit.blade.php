@@ -153,37 +153,34 @@
             type: "GET",
             url: '/list/show/' + taskId,
             success: function (response) {
-
                 if(response.status == 404){
-                    //TODO: display error message
-                } else {
-
-                    //setting the task id in a hidden input
-                    response.task.id ?  $('#id').val(response.task.id) : '';
-
-                    //load title
-                    $('#title').val(response.task.title);
-
-                    //load description
-                    $('#description').val(response.task.description);
-
-                    //days checkboxes
-                    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-
-                    days.forEach(day => {
-                        response.task[day] === 'on' ? $('#' + day).prop("checked", true) : $('#' + day).prop('checked', false);
-                    });
-
-
-                    //repeating checkbox
-                    response.task.repeating==='on' ?  $( '#repeating' ).prop( 'checked', true ) : $('#repeating').prop( 'checked', false );
-
-                    //date due
-                    response.task.date_due ?  $('#datepicker_edit').val(response.task.date_due) : '';
-
-                    //time due
-                    response.task.time_due ?  $('#timepicker_edit').val(response.task.time_due) : $('#timepicker_edit').val('0:00');
+                    return;
                 }
+
+                //setting the task id in a hidden input
+                response.task.id ?  $('#id').val(response.task.id) : '';
+
+                //load title
+                $('#title').val(response.task.title);
+
+                //load description
+                $('#description').val(response.task.description);
+
+                //days checkboxes
+                const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+                days.forEach(day => {
+                    response.task[day] === 'on' ? $('#' + day).prop("checked", true) : $('#' + day).prop('checked', false);
+                });
+
+                //repeating checkbox
+                response.task.repeating==='on' ?  $( '#repeating' ).prop( 'checked', true ) : $('#repeating').prop( 'checked', false );
+
+                //date due
+                response.task.date_due ?  $('#datepicker_edit').val(response.task.date_due) : '';
+
+                //time due
+                response.task.time_due ?  $('#timepicker_edit').val(response.task.time_due) : $('#timepicker_edit').val('0:00');
             }
         });
     }

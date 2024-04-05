@@ -129,12 +129,12 @@ class TaskController extends Controller
                 'status' => 200,
                 'task'   => $editFormData
             ]);
-        } else {
-            return response()->json([
-                'status'  => 404,
-                'message' => 'Task not found!',
-            ]);
         }
+
+        return response()->json([
+            'status'  => 404,
+            'message' => 'Task not found!',
+        ]);
     }
 
     /**
